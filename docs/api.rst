@@ -9,5 +9,8 @@
 API Docs
 ========
 
-.. .. automodule:: marshmallow_utils
-..    :members:
+Fields
+------
+
+.. automodule:: marshmallow_utils.fields
+   :members:

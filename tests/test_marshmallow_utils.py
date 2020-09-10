@@ -7,10 +7,6 @@
 
 """Module tests."""
 
-from flask import Flask
-
-from marshmallow_utils import MarshmallowUtils
-
 
 def test_version():
     """Test version import."""

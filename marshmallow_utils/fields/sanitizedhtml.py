@@ -8,7 +8,6 @@
 """HTML sanitized string field."""
 
 import bleach
-from flask import current_app
 
 from .sanitizedunicode import SanitizedUnicode
 
@@ -56,13 +55,13 @@ class SanitizedHTML(SanitizedUnicode):
 
     def __init__(self, tags=None, attrs=None, *args, **kwargs):
         """Initialize field."""
-        super(SanitizedHTML, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.tags = tags or ALLOWED_HTML_TAGS
         self.attrs = attrs or ALLOWED_HTML_ATTRS
 
     def _deserialize(self, value, attr, data, **kwargs):
         """Deserialize string by sanitizing HTML."""
-        value = super(SanitizedHTML, self)._deserialize(
+        value = super()._deserialize(
             value, attr, data, **kwargs)
         return bleach.clean(
             value,

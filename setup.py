@@ -37,7 +37,7 @@ for reqs in extras_require.values():
 install_requires = [
     'arrow>=0.16.0',
     'bleach>=3.0.0',
-    'ftfy>5.6,<6.0.0',
+    'ftfy>=5.6,<6.0.0',
     'marshmallow>=3.0.0,<4.0.0',
 ]
 
@@ -77,6 +77,6 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-        'Development Status :: 1 - Planning',
+        'Development Status :: 5 - Stable',
     ],
 )
