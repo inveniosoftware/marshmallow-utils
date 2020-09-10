@@ -35,7 +35,10 @@ for reqs in extras_require.values():
     extras_require['all'].extend(reqs)
 
 install_requires = [
-    'marshmallow>=3.0.0,<4.0.0'
+    'arrow>=0.16.0',
+    'bleach>=3.0.0',
+    'ftfy>5.6,<6.0.0',
+    'marshmallow>=3.0.0,<4.0.0',
 ]
 
 packages = find_packages()
