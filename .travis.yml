@@ -20,7 +20,7 @@ cache:
 
 env:
   - REQUIREMENTS=lowest
-  - REQUIREMENTS=release DEPLOY=true
+  - REQUIREMENTS=release
 
 python:
   - "3.6"
@@ -47,10 +47,8 @@ deploy:
   provider: pypi
   user: inveniosoftware
   password:
-    secure: TODO:PYPISECUREHASH
+    secure: "ai6hXKtDMkBwjRpFK8HW4N0B85+ydUo4KbRBT3VMKL3W66OpB0uWHQlfeU5vNsEhZnIe9jWcQ1gUiUhyfFcFTnMo+6gDdVFn8BpRiufbIkObb/XOuhn/TRzIDLIPJkgQITfIkMeqDT+jmKaqrmUEyOxrnfr2FHOHk+WhWA/0s6j/u0EFmM/v1PVoJegZaU/O+Zfl/7zQPySzTndum+WMh2vYStOmK/WxbEFFKSSRhKenS0na8FScA1GZ34B1vWRHqXWnnX1rUGoXe6N+8JMMRpxycF1GuA3iICBi5/VA4umwzbWYb6PrUIf2V2iHX/PbveeaKyKsaGaW8I2eynbDW2Hme63s6cHuLV0r3d21b2a/X3w2s61MI7MzT9Jiu4MWlSdTYnESBfeTbM9pHGBAM653JmPDR8TqeVVpJ6wPof2EyGWSXmqS1xdirZcJpuGsb/aGP5Ee9QzbURWBCrOdkavGZswhxW3tvDAD1OAw5t5N0eBNagVdou1KNwieyAnsPW1jX/kbtB/veU3qah4G2Eb635+SYwJjLikt1CsqpOIeRgYPngb5drKExkoAJS35JJdAbZSGrIA58SpFX1wCr9hAh7TnWv7gfrHJjzrOIgHfGgRMUK9kwrm6ZnzvWjml3uUvSb83me8McR0kMWxWcJsdSHQXiQ8F84XUleBjoI0="
   distributions: "sdist bdist_wheel"
   on:
     tags: true
-    python: "3.8"
-    repo: inveniosoftware/marshmallow-utils
-    condition: $DEPLOY = true
+  skip_existing: true
