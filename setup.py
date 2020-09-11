@@ -37,7 +37,7 @@ for reqs in extras_require.values():
 install_requires = [
     'arrow>=0.16.0',
     'bleach>=3.0.0',
-    'ftfy>=5.6,<6.0.0',
+    'ftfy>=4.4.3',
     'marshmallow>=3.0.0,<4.0.0',
 ]
 
