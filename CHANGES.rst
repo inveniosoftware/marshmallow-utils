@@ -8,6 +8,10 @@
 Changes
 =======
 
-Version 0.1.0 (released TBD)
+Version 0.1.1 (released 2020-09-11)
+
+- Minor fix to allow a lower ftfy package version than the latest.
+
+Version 0.1.0 (released 2020-09-11)
 
 - Initial public release.
