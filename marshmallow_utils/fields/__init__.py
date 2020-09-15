@@ -7,12 +7,15 @@
 
 """Marshmallow fields."""
 
+from .generated import GenFunction, GenMethod
 from .isodate import ISODateString
 from .sanitizedhtml import SanitizedHTML
 from .sanitizedunicode import SanitizedUnicode
 from .trimmed import TrimmedString
 
 __all__ = (
+    'GenFunction',
+    'GenMethod',
     'ISODateString',
     'SanitizedHTML',
     'SanitizedUnicode',

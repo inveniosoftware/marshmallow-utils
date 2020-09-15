@@ -10,7 +10,7 @@
 from datetime import date
 
 import pytest
-from marshmallow import Schema, ValidationError
+from marshmallow import EXCLUDE, Schema, ValidationError, missing
 
 from marshmallow_utils import fields
 
@@ -51,3 +51,86 @@ def test_isodate():
 
     assert ASchema().load({'f': '1999-10-27'}) == {'f': '1999-10-27'}
     pytest.raises(ValidationError, ASchema().load, {'f': 'invalid'})
+
+
+def test_generated():
+    """Test fields.generated fields."""
+
+    def serialize_func(obj, ctx):
+        return ctx.get('func-foo', obj.get('func-bar', missing))
+
+    def deserialize_func(value, ctx, data):
+        return ctx.get('func-foo', data.get('func-bar', missing))
+
+    class GeneratedFieldsSchema(Schema):
+        """Test schema."""
+        class Meta:
+            """Meta attributes for the schema."""
+
+            unknown = EXCLUDE
+
+        gen_function = fields.GenFunction(
+            serialize=serialize_func,
+            deserialize=deserialize_func,
+        )
+
+        gen_method = fields.GenMethod(
+            serialize='_serialize_gen_method',
+            deserialize='_deserialize_gen_method',
+            missing='raises-warning',
+        )
+
+        def _serialize_gen_method(self, obj):
+            # "meth-foo" from context or "meth-bar" from the object
+            return self.context.get(
+                'meth-foo', obj.get('meth-bar', missing))
+
+        def _deserialize_gen_method(self, value, data):
+            # "meth-foo" from context or "meth-bar" from the data
+            return self.context.get(
+                'meth-foo', data.get('meth-bar', missing))
+
+    ctx = {
+        'func-foo': 'ctx-func-value',
+        'meth-foo': 'ctx-meth-value',
+    }
+    data = {
+        'func-bar': 'data-func-value',
+        'meth-bar': 'data-meth-value',
+        'gen_function': 'original-func-value',
+        'gen_method': 'original-meth-value',
+    }
+
+    # No context, no data
+    assert GeneratedFieldsSchema().load({}) == {}
+    assert GeneratedFieldsSchema().dump({}) == {}
+
+    # Only context
+    assert GeneratedFieldsSchema(context=ctx).load({}) == {
+        'gen_function': 'ctx-func-value',
+        'gen_method': 'ctx-meth-value',
+    }
+    assert GeneratedFieldsSchema(context=ctx).dump({}) == {
+        'gen_function': 'ctx-func-value',
+        'gen_method': 'ctx-meth-value',
+    }
+
+    # Only data
+    assert GeneratedFieldsSchema().load(data) == {
+        'gen_function': 'data-func-value',
+        'gen_method': 'data-meth-value',
+    }
+    assert GeneratedFieldsSchema().dump(data) == {
+        'gen_function': 'data-func-value',
+        'gen_method': 'data-meth-value',
+    }
+
+    # Context and data
+    assert GeneratedFieldsSchema(context=ctx).load(data) == {
+        'gen_function': 'ctx-func-value',
+        'gen_method': 'ctx-meth-value',
+    }
+    assert GeneratedFieldsSchema(context=ctx).dump(data) == {
+        'gen_function': 'ctx-func-value',
+        'gen_method': 'ctx-meth-value',
+    }
