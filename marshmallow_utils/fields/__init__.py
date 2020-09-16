@@ -9,11 +9,13 @@
 
 from .generated import GenFunction, GenMethod
 from .isodate import ISODateString
-from .sanitizedhtml import SanitizedHTML
+from .sanitizedhtml import ALLOWED_HTML_ATTRS, ALLOWED_HTML_TAGS, SanitizedHTML
 from .sanitizedunicode import SanitizedUnicode
 from .trimmed import TrimmedString
 
 __all__ = (
+    'ALLOWED_HTML_ATTRS',
+    'ALLOWED_HTML_TAGS',
     'GenFunction',
     'GenMethod',
     'ISODateString',

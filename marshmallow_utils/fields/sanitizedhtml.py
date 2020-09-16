@@ -51,7 +51,21 @@ ALLOWED_HTML_ATTRS = {
 
 
 class SanitizedHTML(SanitizedUnicode):
-    """String field which strips sanitizes HTML using the bleach library."""
+    """String field which sanitizes HTML using the bleach library.
+
+    The default list of allowed tags and attributes is defined by
+    ``ALLOWED_HTML_TAGS`` and ``ALLOWED_HTML_ATTRS``.
+
+    You can override the defaults like this:
+
+    .. code-block:: python
+
+        class MySchema(Schema):
+            html = fields.SanitizedHTML(tags=['a'], attrs={'a': ['href']})
+
+    :param tags: List of allowed tags.
+    :param attrs: Dictionary of allowed attributes per tag.
+    """
 
     def __init__(self, tags=None, attrs=None, *args, **kwargs):
         """Initialize field."""
