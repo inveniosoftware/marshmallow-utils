@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 0.1.3 (released 2020-09-16)
+
+- Moved additional utilities into the library.
+
 Version 0.1.2 (released 2020-09-16)
 
 - Ported GenFunction and GenMethod
