@@ -21,6 +21,7 @@ tests_require = [
     'pytest-isort>=1.2.0',
     'pytest-pycodestyle>=2.2.0',
     'pytest-pydocstyle>=2.2.0',
+    'pytest>=5.4',
 ]
 
 extras_require = {
