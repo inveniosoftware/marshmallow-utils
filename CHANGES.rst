@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 0.1.2 (released 2020-09-16)
+
+- Ported GenFunction and GenMethod
+
 Version 0.1.1 (released 2020-09-11)
 
 - Minor fix to allow a lower ftfy package version than the latest.
