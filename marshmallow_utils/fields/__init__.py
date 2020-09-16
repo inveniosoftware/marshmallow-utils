@@ -9,6 +9,8 @@
 
 from .generated import GenFunction, GenMethod
 from .isodate import ISODateString
+from .links import LinksField
+from .nestedattr import NestedAttribute
 from .sanitizedhtml import ALLOWED_HTML_ATTRS, ALLOWED_HTML_TAGS, SanitizedHTML
 from .sanitizedunicode import SanitizedUnicode
 from .trimmed import TrimmedString
@@ -19,6 +21,8 @@ __all__ = (
     'GenFunction',
     'GenMethod',
     'ISODateString',
+    'LinksField',
+    'NestedAttribute',
     'SanitizedHTML',
     'SanitizedUnicode',
     'TrimmedString',

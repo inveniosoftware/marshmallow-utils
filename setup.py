@@ -21,7 +21,7 @@ tests_require = [
     'pytest-isort>=1.2.0',
     'pytest-pycodestyle>=2.2.0',
     'pytest-pydocstyle>=2.2.0',
-    'pytest>=5.4',
+    'pytest>=6.0',
 ]
 
 extras_require = {
@@ -40,6 +40,7 @@ install_requires = [
     'bleach>=3.0.0',
     'ftfy>=4.4.3',
     'marshmallow>=3.0.0,<4.0.0',
+    "uritemplate>=3.0.1",
 ]
 
 packages = find_packages()
