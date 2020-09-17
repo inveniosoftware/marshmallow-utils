@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version 0.1.4 (released 2020-09-17)
+
+- Adds LinksSchema similar to LinksField
+
 Version 0.1.3 (released 2020-09-16)
 
 - Moved additional utilities into the library.
