@@ -9,7 +9,7 @@
 
 from collections import defaultdict
 
-from marshmallow import fields, missing
+from marshmallow import Schema, fields, missing, post_dump
 
 
 class LinksStore:
@@ -77,3 +77,14 @@ class LinksStore:
         assert path.startswith("/")
         path = f"/api{path}" if api else path
         return f"{scheme}://{host}{path}{querystring}"
+
+
+class LinksSchema(Schema):
+    """Links schema that stores the result in a link store."""
+
+    namespace = None
+
+    @post_dump()
+    def _store(self, data, **kwargs):
+        self.context['links_store'].add(self.namespace, data)
+        return data
