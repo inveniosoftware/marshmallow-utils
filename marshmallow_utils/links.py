@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2020 Northwestern University.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -10,6 +11,7 @@
 from collections import defaultdict
 
 from marshmallow import Schema, fields, missing, post_dump
+from uritemplate import URITemplate
 
 
 class LinksStore:
@@ -57,18 +59,47 @@ class LinksStore:
         """Resolves in-place all the tracked link dictionaries."""
         config = config or self.config
         assert config, "Links config is empty."
+
         context = context or {}
-        for ns, link_objects in self._links.items():
+        parameters = self._links
+
+        for ns, keyed_parameters_array in parameters.items():
             if ns not in config:
                 raise Exception(f'Unknown links namespace: {ns}')
-            for links in link_objects:
-                for k, v in links.items():
-                    links[k] = self.base_url(
-                        host=self.host,
-                        path=config[ns][k].expand(**context, **v),
-                        # TODO: how do we handle this via URITemplate?
-                        # querystring='...',
+
+            # Why is this a list?
+            for keyed_parameters in keyed_parameters_array:
+                # Always just a list of 1 dict with
+                # keys: each link key
+                # values: dict with 1
+                #     key: "params"
+                #     value: dict of querystring parameters
+                for k, params in keyed_parameters.items():
+                    keyed_parameters[k] = self.to_link(
+                        config[ns][k],
+                        {**context, **params}
                     )
+
+    def to_link(self, template, values):
+        """Expand the link template with the values."""
+        # NOTE: Querystring parameters are dealt separately because
+        #       URITemplate doesn't recursively expand the 'params' dict,
+        #       so we have to do it ourselves carefully
+        qs_parameters = values.get("params", {})
+        qs = ""
+        for idx, key in enumerate(sorted(qs_parameters.keys())):
+            prefix = "?" if idx == 0 else "&"
+            tpl = URITemplate(f"{{{prefix}{key}*}}")
+            qs_part = tpl.expand({key: qs_parameters[key]})
+            qs += qs_part
+
+        path = template.expand({**values, "params": {}})
+
+        return self.base_url(
+            host=self.host,
+            path=path,
+            querystring=qs
+        )
 
     @staticmethod
     def base_url(scheme="https", host=None, path="/", querystring="",
