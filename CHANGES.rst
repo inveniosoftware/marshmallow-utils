@@ -1,5 +1,6 @@
 ..
     Copyright (C) 2020 CERN.
+    Copyright (C) 2020 Northwestern University.
 
     Marshmallow-Utils is free software; you can redistribute it and/or
     modify it under the terms of the MIT License; see LICENSE file for more
@@ -7,6 +8,10 @@
 
 Changes
 =======
+
+Version 0.1.5 (released 2020-09-24)
+
+- Fix to expand querystring params correctly
 
 Version 0.1.4 (released 2020-09-17)
 
