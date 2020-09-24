@@ -81,25 +81,24 @@ class LinksStore:
                     )
 
     def to_link(self, template, values):
-        """Expand the link template with the values."""
-        # NOTE: Querystring parameters are dealt separately because
-        #       URITemplate doesn't recursively expand the 'params' dict,
-        #       so we have to do it ourselves carefully
-        qs_parameters = values.get("params", {})
-        qs = ""
-        for idx, key in enumerate(sorted(qs_parameters.keys())):
-            prefix = "?" if idx == 0 else "&"
-            tpl = URITemplate(f"{{{prefix}{key}*}}")
-            qs_part = tpl.expand({key: qs_parameters[key]})
-            qs += qs_part
+        """Expand the link template with the values.
 
-        path = template.expand({**values, "params": {}})
+        NOTE: querystring parameters (``params``) are converted to associative
+              arrays in order to be expanded correctly.
+        """
+        qs_dict = values.get("params", {})
+        qs_associative_array = []
+        for param, value in sorted(qs_dict.items()):
+            if isinstance(value, list):
+                param_array = [(param, e) for e in value]
+            else:
+                param_array = [(param, value)]
 
-        return self.base_url(
-            host=self.host,
-            path=path,
-            querystring=qs
-        )
+            qs_associative_array.extend(param_array)
+
+        path = template.expand({**values, "params": qs_associative_array})
+
+        return self.base_url(host=self.host, path=path)
 
     @staticmethod
     def base_url(scheme="https", host=None, path="/", querystring="",
