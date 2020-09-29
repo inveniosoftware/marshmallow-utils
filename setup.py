@@ -38,8 +38,10 @@ for reqs in extras_require.values():
 install_requires = [
     'arrow>=0.16.0',
     'bleach>=3.0.0',
+    'edtf>=4.0.1,<5.0.0',
     'ftfy>=4.4.3',
     'marshmallow>=3.0.0,<4.0.0',
+    'pycountry>=18.12.8',
     "uritemplate>=3.0.1",
 ]
 
