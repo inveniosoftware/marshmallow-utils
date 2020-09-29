@@ -7,8 +7,10 @@
 
 """Marshmallow fields."""
 
+from .edtfdatestring import EDTFDateString
 from .generated import GenFunction, GenMethod
 from .isodate import ISODateString
+from .isolanguage import ISOLangString
 from .links import LinksField
 from .nestedattr import NestedAttribute
 from .sanitizedhtml import ALLOWED_HTML_ATTRS, ALLOWED_HTML_TAGS, SanitizedHTML
@@ -18,9 +20,11 @@ from .trimmed import TrimmedString
 __all__ = (
     'ALLOWED_HTML_ATTRS',
     'ALLOWED_HTML_TAGS',
+    'EDTFDateString',
     'GenFunction',
     'GenMethod',
     'ISODateString',
+    'ISOLangString',
     'LinksField',
     'NestedAttribute',
     'SanitizedHTML',
