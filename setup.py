@@ -42,7 +42,8 @@ install_requires = [
     'ftfy>=4.4.3',
     'marshmallow>=3.0.0,<4.0.0',
     'pycountry>=18.12.8',
-    "uritemplate>=3.0.1",
+    'uritemplate>=3.0.1',
+    'werkzeug>=1.0.0',
 ]
 
 packages = find_packages()
