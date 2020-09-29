@@ -12,10 +12,41 @@ from collections import defaultdict
 
 from marshmallow import Schema, fields, missing, post_dump
 from uritemplate import URITemplate
+from werkzeug.datastructures import MultiDict
+
+
+def _unpack_dict(data):
+    """Unpack lists inside a dict.
+
+    For instance this dictionary:
+
+    .. code-block:: python
+
+        {
+            "type": ["A", "B"],
+            "sort": "newest",
+        }
+
+    Is expanded to:
+
+    .. code-block:: python
+
+        [
+            ("sort", "newest"),
+            ("type", "A"),
+            ("type", "B"),
+        ]
+    """
+    for key, value in sorted(data.items()):
+        if isinstance(value, list):
+            for v in value:
+                yield key, v
+        else:
+            yield key, value
 
 
 class LinksStore:
-    """Utility class for keeping track of links.
+    """Utility class for keeping track of and resolve links.
 
     The ``config`` argument is a dictionary with link namespaces as keys and a
     dictionary of link types and their URITemplate objects.
@@ -38,75 +69,101 @@ class LinksStore:
                 'draft': URITemplate('/api/records{/pid_value}/draft'),
             }
         })
+
+    If the ``config`` is provided in the constructor, links will be resolved
+    immediately. If no config is provided, the links will be resolved upon a
+    call to ``resolve()`` method with the config.
+
+    :params host: A hostname or a callable returning a hostname.
+    :params config: A link configuration/
+    :params context: Extra template variables.
+    :params ignore_missing: If true, missing templates will be ignored.
     """
 
-    def __init__(self, host=None, config=None):
+    def __init__(self, host=None, config=None, context=None,
+                 ignore_missing=True):
         """Constructor."""
         self._host = host
         self.config = config
         self._links = defaultdict(list)
+        self._context = context or {}
+        self._ignore_missing = ignore_missing
 
     def add(self, namespace, links):
         """Adds a dictionary of links under a namespace."""
         self._links[namespace].append(links)
+        if self.config:
+            self.resolve()
 
     @property
     def host(self):
         """Get the hostname."""
         return self._host() if callable(self._host) else self._host
 
-    def resolve(self, context=None, config=None):
+    def resolve(self, config=None, context=None):
         """Resolves in-place all the tracked link dictionaries."""
         config = config or self.config
+        context = context or self._context
         assert config, "Links config is empty."
 
-        context = context or {}
-        parameters = self._links
+        # Iterate over all namespaces
+        for namespace, links_objects in self._links.items():
+            if namespace not in config:
+                raise Exception(f'Unknown links namespace: {namespace}')
 
-        for ns, keyed_parameters_array in parameters.items():
-            if ns not in config:
-                raise Exception(f'Unknown links namespace: {ns}')
+            # For each namespace, iterate over the list of link dicts
+            for links in links_objects:
 
-            # Why is this a list?
-            for keyed_parameters in keyed_parameters_array:
-                # Always just a list of 1 dict with
-                # keys: each link key
-                # values: dict with 1
-                #     key: "params"
-                #     value: dict of querystring parameters
-                for k, params in keyed_parameters.items():
-                    keyed_parameters[k] = self.to_link(
-                        config[ns][k],
-                        {**context, **params}
-                    )
+                # Resolve all links in the link dict.
+                rmkeys = []
+                for link_key, link_params in links.items():
+                    try:
+                        template = config[namespace][link_key]
+                        links[link_key] = self.expand_link(
+                            template, {**context, **link_params})
+                    except KeyError:
+                        # no template found - ignore or raise
+                        if self._ignore_missing:
+                            rmkeys.append(link_key)
+                        else:
+                            raise
 
-    def to_link(self, template, values):
-        """Expand the link template with the values.
+                # Remove keys that wasn't rendered
+                for k in rmkeys:
+                    del links[k]
 
-        NOTE: querystring parameters (``params``) are converted to associative
-              arrays in order to be expanded correctly.
+    def expand_link(self, template, vars):
+        """Expand the link template with the template variables.
+
+        :param template: URITemplate to expand.
+        :param vars: The template variables for the expansion.
         """
-        qs_dict = values.get("params", {})
-        qs_associative_array = []
-        for param, value in sorted(qs_dict.items()):
-            if isinstance(value, list):
-                param_array = [(param, e) for e in value]
-            else:
-                param_array = [(param, value)]
-
-            qs_associative_array.extend(param_array)
-
-        path = template.expand({**values, "params": qs_associative_array})
-
-        return self.base_url(host=self.host, path=path)
+        return self.base_url(
+            host=self.host,
+            rendered_path=template.expand(**self.preprocess_vars(vars))
+        )
 
     @staticmethod
-    def base_url(scheme="https", host=None, path="/", querystring="",
-                 api=False):
+    def preprocess_vars(vars):
+        """Preprocess template variables before expansion."""
+        for k, v in vars.items():
+            if isinstance(v, MultiDict):
+                vars[k] = list(sorted(v.items(multi=True)))
+            elif isinstance(v, dict):
+                # Note, we unpack dicts with list values at this level, because
+                # there are no meaningful templates that can make use of them
+                # (basically the lists just becomes URL encoded python objects)
+                vars[k] = list(_unpack_dict(v))
+        return vars
+
+    @staticmethod
+    def base_url(scheme="https", host=None, rendered_path="/"):
         """Creates the URL for API and UI endpoints."""
-        assert path.startswith("/")
-        path = f"/api{path}" if api else path
-        return f"{scheme}://{host}{path}{querystring}"
+        if host and scheme:
+            assert rendered_path.startswith("/")
+            return f"{scheme}://{host}{rendered_path}"
+        else:
+            return rendered_path
 
 
 class LinksSchema(Schema):
@@ -116,5 +173,8 @@ class LinksSchema(Schema):
 
     @post_dump()
     def _store(self, data, **kwargs):
-        self.context['links_store'].add(self.namespace, data)
+        self.context["links_store"].add(self.namespace, data)
+        if "links_config" in self.context:
+            self.context["links_store"].resolve(
+                config=self.context["links_config"])
         return data
