@@ -115,3 +115,53 @@ def test_links_field(configs):
         KeyError, _assert_dump, TestSchema, configs[2], None,
         ignore_missing=False
     )
+
+
+# New style links
+
+
+def test_new_links():
+
+    class EntitySchema(Schema):
+        links = fields.Links()
+
+    class ItemLinkSchema1(Schema):
+        self = fields.Link(
+            template=URITemplate("/1/{?pid}"),
+            params=lambda o: {'pid': o.get("pid")},
+            permission="read"
+        )
+
+    class ItemLinkSchema2(Schema):
+        self = fields.Link(
+            template=URITemplate("/2/{?pid}"),
+            params=lambda o: {'pid': o.get("pid")},
+            permission="create"
+        )
+
+    # Test: Create links during dumping
+    store = LinksStore(host="localhost")
+    config = {"item": ItemLinkSchema1()}
+    context = {
+        "links_store": store,
+        "links_config": config,
+        "namespace": "item",
+        "field_permission_check": lambda o: True  # allows anything
+    }
+    assert (
+        {'links': {'self': 'https://localhost/1/?pid=1'}} ==
+        EntitySchema(context=context).dump({"pid": 1})
+    )
+
+    # Test: Create links with other config during dumping
+    config = {"item": ItemLinkSchema2()}
+    context = {
+        "links_store": store,
+        "links_config": config,
+        "namespace": "item",
+        "field_permission_check": lambda o: True  # allows anything
+    }
+    assert (
+        {'links': {'self': 'https://localhost/2/?pid=1'}} ==
+        EntitySchema(context=context).dump({"pid": 1})
+    )

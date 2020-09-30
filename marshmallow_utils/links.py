@@ -100,6 +100,7 @@ class LinksStore:
         """Get the hostname."""
         return self._host() if callable(self._host) else self._host
 
+    # TODO: Deprecate
     def resolve(self, config=None, context=None):
         """Resolves in-place all the tracked link dictionaries."""
         config = config or self.config
@@ -166,6 +167,7 @@ class LinksStore:
             return rendered_path
 
 
+# TODO: Deprecate
 class LinksSchema(Schema):
     """Links schema that stores the result in a link store."""
 

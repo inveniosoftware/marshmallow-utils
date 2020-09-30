@@ -10,6 +10,7 @@
 from marshmallow import fields, missing
 
 
+# TODO: Deprecate
 class LinksField(fields.Field):
     """Links field."""
 
@@ -83,4 +84,4 @@ class Link(fields.Field):
         if field_permission_check:
             action = self.permission
             if action and field_permission_check(action):
-                return links_store.to_link(self.template, self.params(obj))
+                return links_store.expand_link(self.template, self.params(obj))
