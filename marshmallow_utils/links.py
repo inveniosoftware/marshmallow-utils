@@ -55,7 +55,7 @@ class LinksFactory:
     def __init__(self, host=None, config=None):
         """Constructor."""
         self._host = host
-        self._config = config
+        self._config = config or {}
 
     def get_schema(self, namespace, context):
         """Get the schema for a given namespace."""

@@ -35,6 +35,11 @@ def my_schema():
             params=lambda o: {"pid": o.get("pid")},
             permission="admin",
         )
+        prev = fields.Link(
+            template=URITemplate("/prev"),
+            params=lambda o: {},
+            when=lambda o: o.get("allowed", True)
+        )
 
     class MySchema(Schema):
         links = fields.Links()
@@ -123,3 +128,15 @@ def test_permission(my_schema):
     links = my_schema.dump({})["links"]
     assert 'self' in links
     assert 'publish' in links
+
+
+def test_when(my_schema):
+    links = my_schema.dump({"allowed": False})["links"]
+    assert 'self' in links
+    assert 'publish' in links
+    assert 'prev' not in links
+
+    links = my_schema.dump({"allowed": True})["links"]
+    assert 'self' in links
+    assert 'publish' in links
+    assert 'prev' in links
