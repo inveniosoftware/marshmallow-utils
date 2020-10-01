@@ -13,115 +13,48 @@ from marshmallow import Schema
 from uritemplate import URITemplate
 
 from marshmallow_utils import fields
-from marshmallow_utils.links import LinksSchema, LinksStore
+from marshmallow_utils.links import LinksFactory
 
 
-def test_resolve_params():
-    """Test link store resolver."""
-    links = LinksStore(host="localhost")
-    links_config = {
-        "search": {
-            "self": URITemplate("/{?params*}"),
-        }
-    }
-    data = {
-        "self": {
-            "params": {
+@pytest.fixture()
+def my_schema():
+    """A test schema with."""
+    class LinksSchema(Schema):
+        self = fields.Link(
+            template=URITemplate("/records{?params*}"),
+            params=lambda o: {"params": {
+                # type is expected to show in the query string as type=A&type=B
                 "type": ["A", "B"],
                 "sort": "newest",
                 "subtype": ["1"],
                 "size": 10,
-            }
+            }}
+        )
+        publish = fields.Link(
+            template=URITemplate("/admin{/pid}"),
+            params=lambda o: {"pid": o.get("pid")},
+            permission="admin",
+        )
+
+    class MySchema(Schema):
+        links = fields.Links()
+
+    factory = LinksFactory(
+        host="localhost",
+        config={"search": LinksSchema}
+    )
+
+    return MySchema(
+        context={
+            "links_factory": factory,
+            "links_namespace": "search"
+
         }
-    }
-    links.add("search", data)
-
-    links.resolve(config=links_config)
-
-    assert (
-        "https://localhost/?size=10&sort=newest&subtype=1&type=A&type=B" ==
-        data["self"]
     )
 
 
-def _assert_dump(schema_cls, config, expected_result, **opts):
-    """Run a links dump test."""
-    store = LinksStore(host="localhost", config=config, **opts)
-    result = schema_cls(context={'links_store': store}).dump({})
-    assert result == expected_result
-
-
-@pytest.fixture()
-def configs():
-    """Links configurations."""
-    return[
-        # self key
-        dict(item=dict(self=URITemplate("/1/{?pid}"))),
-        # self key but different template
-        dict(item=dict(self=URITemplate("/2/{?pid}"))),
-        # self key doesn't exists
-        dict(item=dict(noself=URITemplate("/3/{?pid}"))),
-    ]
-
-
-def test_links_schema(configs):
-    """Test links schema."""
-    # A links schema, generating parameters for the URI templates
-    class TestLinksSchema(LinksSchema):
-        namespace = 'item'
-        self = fields.GenFunction(lambda r, ctx: {'pid': 1})
-
-    # Test: Create links during dumping
-    _assert_dump(
-        TestLinksSchema, configs[0], {'self': 'https://localhost/1/?pid=1'})
-
-    # Test: Create links with other config during dumping
-    _assert_dump(
-        TestLinksSchema, configs[1], {'self': 'https://localhost/2/?pid=1'})
-
-    # Test: Remove unresolved links during dumping
-    _assert_dump(TestLinksSchema, configs[2], {})
-
-    # Test: Raise on unresolved links during dumping
-    pytest.raises(
-        KeyError, _assert_dump, TestLinksSchema, configs[2], {},
-        ignore_missing=False
-    )
-
-
-def test_links_field(configs):
-    """Test links field."""
-    class Links(Schema):
-        self = fields.GenFunction(lambda r, ctx: {'pid': 1})
-
-    class TestSchema(Schema):
-        links = fields.LinksField(Links, namespace='item')
-
-    # Test: Create links during dumping
-    _assert_dump(
-        TestSchema, configs[0],
-        {'links': {'self': 'https://localhost/1/?pid=1'}})
-
-    # Test: Create links with other config during dumping
-    _assert_dump(
-        TestSchema, configs[1],
-        {'links': {'self': 'https://localhost/2/?pid=1'}})
-
-    # Test: Remove unresolved links during dumping
-    _assert_dump(TestSchema, configs[2], {'links': {}})
-
-    # Test: Raise on unresolved links during dumping
-    pytest.raises(
-        KeyError, _assert_dump, TestSchema, configs[2], None,
-        ignore_missing=False
-    )
-
-
-# New style links
-
-
-def test_new_links():
-
+def test_links():
+    """Test links factory with links field."""
     class EntitySchema(Schema):
         links = fields.Links()
 
@@ -140,12 +73,10 @@ def test_new_links():
         )
 
     # Test: Create links during dumping
-    store = LinksStore(host="localhost")
-    config = {"item": ItemLinkSchema1()}
+    f = LinksFactory(host="localhost", config={"item": ItemLinkSchema1})
     context = {
-        "links_store": store,
-        "links_config": config,
-        "namespace": "item",
+        "links_factory": f,
+        "links_namespace": "item",
         "field_permission_check": lambda o: True  # allows anything
     }
     assert (
@@ -154,14 +85,41 @@ def test_new_links():
     )
 
     # Test: Create links with other config during dumping
-    config = {"item": ItemLinkSchema2()}
+    f = LinksFactory(host="localhost", config={"item": ItemLinkSchema2})
     context = {
-        "links_store": store,
-        "links_config": config,
-        "namespace": "item",
+        "links_factory": f,
+        "links_namespace": "item",
         "field_permission_check": lambda o: True  # allows anything
     }
     assert (
         {'links': {'self': 'https://localhost/2/?pid=1'}} ==
         EntitySchema(context=context).dump({"pid": 1})
     )
+
+
+def test_params_expansion(my_schema):
+    """Test link store resolver."""
+    # Test self link generation with expansion of the "type" query string
+    # argument.
+    self_link = my_schema.dump({})["links"]["self"]
+    assert self_link == \
+        "https://localhost/records?size=10&sort=newest&subtype=1&type=A&type=B"
+
+
+def test_unknown_namespace(my_schema):
+    """Test unknown namespace."""
+    my_schema.context["links_namespace"] = "unknown"
+    assert my_schema.dump({})["links"] == {}
+
+
+def test_permission(my_schema):
+    """Test permission checks."""
+    my_schema.context["field_permission_check"] = lambda a: a != "admin"
+    links = my_schema.dump({})["links"]
+    assert 'self' in links
+    assert 'publish' not in links
+
+    my_schema.context["field_permission_check"] = lambda a: True
+    links = my_schema.dump({})["links"]
+    assert 'self' in links
+    assert 'publish' in links

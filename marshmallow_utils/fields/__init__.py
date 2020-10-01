@@ -11,7 +11,7 @@ from .edtfdatestring import EDTFDateString
 from .generated import GenFunction, GenMethod
 from .isodate import ISODateString
 from .isolanguage import ISOLangString
-from .links import Link, Links, LinksField
+from .links import Link, Links
 from .nestedattr import NestedAttribute
 from .sanitizedhtml import ALLOWED_HTML_ATTRS, ALLOWED_HTML_TAGS, SanitizedHTML
 from .sanitizedunicode import SanitizedUnicode
@@ -27,7 +27,6 @@ __all__ = (
     'ISOLangString',
     'Link',
     'Links',
-    'LinksField',
     'NestedAttribute',
     'SanitizedHTML',
     'SanitizedUnicode',
