@@ -31,8 +31,6 @@ class EDTFDateString(fields.Str):
         parser = level0Expression("level0")
         try:
             result = parser.parseString(datestring)
-            if not result:
-                raise ParseException()
 
             # check it is chronological if interval
             # NOTE: EDTF Date and Interval both have same interface
