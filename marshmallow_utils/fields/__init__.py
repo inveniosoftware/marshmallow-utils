@@ -7,6 +7,7 @@
 
 """Marshmallow fields."""
 
+from .contrib import Function, Method
 from .edtfdatestring import EDTFDateString
 from .generated import GenFunction, GenMethod
 from .isodate import ISODateString
@@ -21,12 +22,14 @@ __all__ = (
     'ALLOWED_HTML_ATTRS',
     'ALLOWED_HTML_TAGS',
     'EDTFDateString',
+    'Function',
     'GenFunction',
     'GenMethod',
     'ISODateString',
     'ISOLangString',
     'Link',
     'Links',
+    'Method',
     'NestedAttribute',
     'SanitizedHTML',
     'SanitizedUnicode',

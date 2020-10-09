@@ -46,7 +46,7 @@ class Function(fields.Function):
 
             foo = Function(serialize_foo, deserialize_foo)
 
-        FooSchema().dump({'foo': 42}).data
+        FooSchema().dump({'foo': 42})
         {'foo': {
             'serialize_args': {
                 'obj': {'foo': 42},
