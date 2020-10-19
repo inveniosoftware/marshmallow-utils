@@ -7,8 +7,6 @@
 
 """Extended Date(/Time) Format Level 0 date string field."""
 
-from datetime import date
-
 from edtf.parser.grammar import ParseException, level0Expression
 from marshmallow import fields
 
@@ -28,20 +26,11 @@ class EDTFDateString(fields.Str):
         "invalid": _("Please provide a valid date or interval.")
     }
 
-    def _deserialize(self, value, attr, data, **kwargs):
-        """Deserialize an EDTF Level 0 formatted date string.
-
-        load()-equivalent operation.
-
-        NOTE: Level 0 allows for an interval.
-        NOTE: ``level0Expression`` tries hard to parse dates. For example,
-              ``"2020-01-02garbage"`` will parse to the 2020-01-02 date.
-        """
+    def _parse_date_string(self, datestring):
+        """Parse input string as EDTF."""
         parser = level0Expression("level0")
-
         try:
-            result = parser.parseString(value)
-
+            result = parser.parseString(datestring)
             if not result:
                 raise ParseException()
 
@@ -52,10 +41,21 @@ class EDTFDateString(fields.Str):
             result = result[0]
             if result.upper_strict() < result.lower_strict():
                 raise self.make_error("invalid")
-
-            return (
-                super(EDTFDateString, self)
-                ._deserialize(str(result), attr, data, **kwargs)
-            )
+            return result
         except ParseException:
             raise self.make_error("invalid")
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        """Deserialize an EDTF Level 0 formatted date string.
+
+        load()-equivalent operation.
+
+        NOTE: Level 0 allows for an interval.
+        NOTE: ``level0Expression`` tries hard to parse dates. For example,
+              ``"2020-01-02garbage"`` will parse to the 2020-01-02 date.
+        """
+        result = self._parse_date_string(value)
+        return (
+            super(EDTFDateString, self)
+            ._deserialize(str(result), attr, data, **kwargs)
+        )
