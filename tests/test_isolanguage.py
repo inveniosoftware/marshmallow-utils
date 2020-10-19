@@ -25,5 +25,4 @@ def test_iso639_3_assert():
 @pytest.mark.parametrize('test_input', ["te", "12t", "te!", ",te!"])
 def test_iso639_3_raise(test_input):
 
-    for i in test_input:
-        pytest.raises(ValidationError, MySchema().load, {'f': i})
+    pytest.raises(ValidationError, MySchema().load, {'f': test_input})
