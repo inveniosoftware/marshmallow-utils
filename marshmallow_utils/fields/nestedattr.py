@@ -20,5 +20,5 @@ class AttributeAccessorFieldMixin:
         return getattr(obj, check_key, default)
 
 
-class NestedAttribute(fields.Nested, AttributeAccessorFieldMixin):
+class NestedAttribute(AttributeAccessorFieldMixin, fields.Nested):
     """Nested object attribute field."""
