@@ -12,4 +12,4 @@ This file is imported by ``marshmallow_utils.__init__``,
 and parsed by ``setup.py``.
 """
 
-__version__ = '0.2.2'
+__version__ = '0.3.0'

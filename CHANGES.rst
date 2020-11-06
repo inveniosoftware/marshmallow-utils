@@ -9,6 +9,11 @@
 Changes
 =======
 
+Version 0.3.0 (released 2020-11-06)
+
+- Added support for proper localization of EDTF dates.
+- Refactored EDTFDateString field.
+
 Version 0.1.5 (released 2020-09-24)
 
 - Fix to expand querystring params correctly
