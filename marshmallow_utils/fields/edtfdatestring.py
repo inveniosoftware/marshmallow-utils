@@ -7,55 +7,61 @@
 
 """Extended Date(/Time) Format Level 0 date string field."""
 
-from edtf.parser.grammar import ParseException, level0Expression
-from marshmallow import fields
+from edtf import Date, Interval, parse_edtf
+from edtf.parser.grammar import ParseException
+from marshmallow import ValidationError, fields
+from marshmallow.validate import Validator
 
 
-def _(x):
-    return x
+class EDTFValidator(Validator):
+    """EDTF validator."""
+
+    default_message = "Please provide a valid date or interval."
+
+    def __init__(self, types=[Date, Interval], chronological_interval=True,
+                 error=None):
+        """Constructor.
+
+        :params types: List of EDTFObject subclasses that you accept. Use
+            EDTFObject to accept all levels.
+        """
+        self._types = types or []
+        self._chronological_interval = chronological_interval
+        self._error = error or self.default_message
+
+    def _format_error(self, value, e):
+        return self._error.format(input=value, edtf=e)
+
+    def __call__(self, value):
+        """Validate."""
+        try:
+            e = parse_edtf(value)
+        except ParseException:
+            raise ValidationError(self._format_error(value, None))
+
+        if self._types:
+            if not any([isinstance(e, t) for t in self._types]):
+                raise ValidationError(self._format_error(value, e))
+
+        if self._chronological_interval:
+            # We require intervals to be chronological. EDTF Date and Interval
+            # both have same interface and
+            # date.lower_strict() <= date.upper_strict() is always True for a
+            # Date
+            if e.upper_strict() < e.lower_strict():
+                raise ValidationError(self._format_error(value, e))
+
+        return value
 
 
 class EDTFDateString(fields.Str):
     """
     Extended Date(/Time) Format Level 0 date string field.
 
-    Made a field for stronger semantics than just a validator.
+    A string field which an using the EDTF Validator.
     """
 
-    default_error_messages = {
-        "invalid": _("Please provide a valid date or interval.")
-    }
-
-    def _parse_date_string(self, datestring):
-        """Parse input string as EDTF."""
-        parser = level0Expression("level0")
-        try:
-            result = parser.parseString(datestring)
-            if not result:
-                raise ParseException()
-
-            # check it is chronological if interval
-            # NOTE: EDTF Date and Interval both have same interface
-            #       and date.lower_strict() <= date.upper_strict() is always
-            #       True for a Date
-            result = result[0]
-            if result.upper_strict() < result.lower_strict():
-                raise self.make_error("invalid")
-            return result
-        except ParseException:
-            raise self.make_error("invalid")
-
-    def _deserialize(self, value, attr, data, **kwargs):
-        """Deserialize an EDTF Level 0 formatted date string.
-
-        load()-equivalent operation.
-
-        NOTE: Level 0 allows for an interval.
-        NOTE: ``level0Expression`` tries hard to parse dates. For example,
-              ``"2020-01-02garbage"`` will parse to the 2020-01-02 date.
-        """
-        result = self._parse_date_string(value)
-        return (
-            super(EDTFDateString, self)
-            ._deserialize(str(result), attr, data, **kwargs)
-        )
+    def __init__(self, **kwargs):
+        """Constructor."""
+        kwargs.setdefault('validate', EDTFValidator())
+        super().__init__(**kwargs)
