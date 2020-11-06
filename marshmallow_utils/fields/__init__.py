@@ -13,7 +13,7 @@ from .generated import GenFunction, GenMethod
 from .isodate import ISODateString
 from .isolanguage import ISOLangString
 from .links import Link, Links
-from .localized_edtfdatestring import LocalizedEDTFDateString
+from .localizededtfstring import LocalizedEDTFString
 from .nestedattr import NestedAttribute
 from .sanitizedhtml import ALLOWED_HTML_ATTRS, ALLOWED_HTML_TAGS, SanitizedHTML
 from .sanitizedunicode import SanitizedUnicode
@@ -24,13 +24,13 @@ __all__ = (
     'ALLOWED_HTML_TAGS',
     'EDTFDateString',
     'Function',
-    'LocalizedEDTFDateString',
     'GenFunction',
     'GenMethod',
     'ISODateString',
     'ISOLangString',
     'Link',
     'Links',
+    'LocalizedEDTFString',
     'Method',
     'NestedAttribute',
     'SanitizedHTML',

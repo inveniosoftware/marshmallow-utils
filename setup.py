@@ -37,6 +37,7 @@ for reqs in extras_require.values():
 
 install_requires = [
     'arrow>=0.16.0',
+    'babel-edtf>=1.0.0',
     'bleach>=3.0.0',
     'edtf>=4.0.1,<5.0.0',
     'ftfy>=4.4.3',
