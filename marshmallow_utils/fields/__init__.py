@@ -7,13 +7,13 @@
 
 """Marshmallow fields."""
 
+from .babel import FormatDate, FormatDatetime, FormatEDTF, FormatTime
 from .contrib import Function, Method
 from .edtfdatestring import EDTFDateString
 from .generated import GenFunction, GenMethod
 from .isodate import ISODateString
 from .isolanguage import ISOLangString
 from .links import Link, Links
-from .localizededtfstring import LocalizedEDTFString
 from .nestedattr import NestedAttribute
 from .sanitizedhtml import ALLOWED_HTML_ATTRS, ALLOWED_HTML_TAGS, SanitizedHTML
 from .sanitizedunicode import SanitizedUnicode
@@ -23,6 +23,10 @@ __all__ = (
     'ALLOWED_HTML_ATTRS',
     'ALLOWED_HTML_TAGS',
     'EDTFDateString',
+    'FormatDate',
+    'FormatDatetime',
+    'FormatEDTF',
+    'FormatTime',
     'Function',
     'GenFunction',
     'GenMethod',
@@ -30,7 +34,6 @@ __all__ = (
     'ISOLangString',
     'Link',
     'Links',
-    'LocalizedEDTFString',
     'Method',
     'NestedAttribute',
     'SanitizedHTML',
