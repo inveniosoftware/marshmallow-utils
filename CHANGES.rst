@@ -9,9 +9,14 @@
 Changes
 =======
 
+Version 0.3.1 (released 2020-11-08)
+
+- Adds support for localization of date, time, datetime, EDTF with string
+  parsing support.
+
 Version 0.3.0 (released 2020-11-06)
 
-- Added support for proper localization of EDTF dates.
+- Adds support for proper localization of EDTF dates.
 - Refactored EDTFDateString field.
 
 Version 0.1.5 (released 2020-09-24)
