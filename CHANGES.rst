@@ -9,6 +9,10 @@
 Changes
 =======
 
+Version 0.3.2 (released 2020-11-10)
+
+- Adds support for GeoJSON geometry object validation.
+
 Version 0.3.1 (released 2020-11-08)
 
 - Adds support for localization of date, time, datetime, EDTF with string
