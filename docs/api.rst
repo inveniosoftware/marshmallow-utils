@@ -14,3 +14,10 @@ Fields
 
 .. automodule:: marshmallow_utils.fields
    :members:
+
+
+Schemas
+-------
+
+.. automodule:: marshmallow_utils.schemas
+   :members:

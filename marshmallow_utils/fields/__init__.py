@@ -11,6 +11,7 @@ from .babel import FormatDate, FormatDatetime, FormatEDTF, FormatTime
 from .contrib import Function, Method
 from .edtfdatestring import EDTFDateString
 from .generated import GenFunction, GenMethod
+from .identifier import IdentifierSet
 from .isodate import ISODateString
 from .isolanguage import ISOLangString
 from .links import Link, Links
@@ -30,6 +31,7 @@ __all__ = (
     'Function',
     'GenFunction',
     'GenMethod',
+    'IdentifierSet',
     'ISODateString',
     'ISOLangString',
     'Link',

@@ -9,9 +9,11 @@
 
 from .geojson import GeometryObjectSchema, MultiPointSchema, PointSchema, \
     PolygonSchema
+from .identifier import IdentifierSchema
 
 __all__ = (
     'GeometryObjectSchema',
+    'IdentifierSchema',
     'MultiPointSchema',
     'PointSchema',
     'PolygonSchema',
