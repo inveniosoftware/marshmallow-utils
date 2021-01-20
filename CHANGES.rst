@@ -9,6 +9,11 @@
 Changes
 =======
 
+Version 0.3.3 (released 2021-01-20)
+
+- Adds support for automatic scheme detection on identifiers.
+- Adds support for identifier sets.
+
 Version 0.3.2 (released 2020-11-10)
 
 - Adds support for GeoJSON geometry object validation.
