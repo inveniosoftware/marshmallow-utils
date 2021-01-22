@@ -140,3 +140,10 @@ def test_when(my_schema):
     assert 'self' in links
     assert 'publish' in links
     assert 'prev' in links
+
+
+def test_link_field_initialization():
+    """Test that you can pass both URI templates and strings."""
+    tpls = ["/records{?params*}", URITemplate("/records{?params*})")]
+    for t in tpls:
+        assert isinstance(fields.Link(template=t).template, URITemplate)

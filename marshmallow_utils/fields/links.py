@@ -8,6 +8,7 @@
 """Link store and field for generating links."""
 
 from marshmallow import fields, missing
+from uritemplate import URITemplate
 
 
 class Links(fields.Field):
@@ -43,6 +44,8 @@ class Link(fields.Field):
     def __init__(self, template=None, params=None, permission=None,
                  when=always, **kwargs):
         """Constructor."""
+        if isinstance(template, str):
+            template = URITemplate(template)
         self.template = template
         self.permission = permission
         self.params = params
