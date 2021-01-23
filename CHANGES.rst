@@ -9,6 +9,11 @@
 Changes
 =======
 
+Version 0.3.4 (released 2021-01-24)
+
+- Makes Link field a bit easier to use by allowing a string to be passed
+  in addition to an URITemplate.
+
 Version 0.3.3 (released 2021-01-20)
 
 - Adds support for automatic scheme detection on identifiers.
