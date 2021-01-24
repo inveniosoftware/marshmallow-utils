@@ -7,7 +7,8 @@
 
 """Marshmallow fields."""
 
-from .babel import FormatDate, FormatDatetime, FormatEDTF, FormatTime
+from .babel import BabelGettextDictField, FormatDate, FormatDatetime, \
+    FormatEDTF, FormatTime
 from .contrib import Function, Method
 from .edtfdatestring import EDTFDateString
 from .generated import GenFunction, GenMethod
@@ -23,6 +24,7 @@ from .trimmed import TrimmedString
 __all__ = (
     'ALLOWED_HTML_ATTRS',
     'ALLOWED_HTML_TAGS',
+    'BabelGettextDictField',
     'EDTFDateString',
     'FormatDate',
     'FormatDatetime',

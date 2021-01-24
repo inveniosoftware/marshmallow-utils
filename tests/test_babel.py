@@ -10,11 +10,13 @@
 from datetime import date, datetime
 
 import pytest
+from babel import Locale
 from babel.dates import get_timezone
 from marshmallow import Schema, ValidationError
 
-from marshmallow_utils.fields import FormatDate, FormatDatetime, FormatEDTF, \
-    FormatTime
+from marshmallow_utils.fields import BabelGettextDictField, FormatDate, \
+    FormatDatetime, FormatEDTF, FormatTime
+from marshmallow_utils.fields.babel import gettext_from_dict
 
 
 @pytest.fixture()
@@ -66,3 +68,53 @@ def test_format_date(dt):
     """Test datetime formatting."""
     assert MySchema().dump({'date': dt}) == {'date': '08.11.2020'}
     assert MySchema().dump({'date': '2021-01-01'}) == {'date': '01.01.2021'}
+
+
+def test_babelgettextdictfield():
+    """Test the babel gettext dict field."""
+    class TestSchema(Schema):
+        title = BabelGettextDictField(locale='da', default_locale='en')
+    s = TestSchema()
+    # Success
+    assert s.dump({'title': {'en': 'EN', 'da': 'DA'}}) == \
+        {'title': 'DA'}
+    assert s.dump({'title': {'en': 'EN'}}) == \
+        {'title': 'EN'}
+    assert s.dump({'title': None}) == {'title': None}
+
+    # Fail - invalid data type
+    assert pytest.raises(ValidationError, s.dump, {'title': 'invalid'})
+    # Fail - default language not in catalog
+    assert pytest.raises(ValidationError, s.dump, {'title': {'de': 'DE'}})
+
+
+def test_babelgettextdictfield_functions():
+    """Test the babel gettext dict field (with functions and parameters)."""
+    class TestSchema(Schema):
+        title = BabelGettextDictField(
+            locale=lambda: Locale.parse('en'),
+            default_locale=lambda: Locale.parse('da'))
+    s = TestSchema()
+
+    assert s.dump({'title': {'en': 'EN', 'da': 'DA'}}) == \
+        {'title': 'EN'}
+    assert s.dump({'title': {'da': 'DA'}}) == \
+        {'title': 'DA'}
+    assert s.dump({'title': None}) == {'title': None}
+
+    # Fail - default language not in catalog
+    assert pytest.raises(ValidationError, s.dump, {'title': {'de': 'DE'}})
+
+
+def test_gettext_from_dict():
+    """Test the locale negotiation."""
+    assert gettext_from_dict({'en': 'en', 'en_US': 'en_US'}, 'en_US', 'da') \
+        == 'en_US'
+    assert gettext_from_dict({'en_US': 'en_US'}, 'en', 'da') \
+        == 'en_US'
+    assert gettext_from_dict({'en': 'en'}, 'en_US', 'da') \
+        == 'en'
+    assert gettext_from_dict({'en_GB': 'en_GB'}, 'en', 'da') \
+        == 'en_GB'
+    assert gettext_from_dict({'da': 'da'}, 'de', 'da') \
+        == 'da'
