@@ -9,6 +9,10 @@
 Changes
 =======
 
+Version 0.3.5 (released 2021-01-25)
+
+- Adds BabelGettextDictField for dumping translation strings from dicts.
+
 Version 0.3.4 (released 2021-01-24)
 
 - Makes Link field a bit easier to use by allowing a string to be passed
