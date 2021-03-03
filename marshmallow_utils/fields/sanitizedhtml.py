@@ -67,11 +67,12 @@ class SanitizedHTML(SanitizedUnicode):
     :param attrs: Dictionary of allowed attributes per tag.
     """
 
-    def __init__(self, tags=None, attrs=None, *args, **kwargs):
+    def __init__(self, tags=ALLOWED_HTML_TAGS, attrs=ALLOWED_HTML_ATTRS, *args,
+                 **kwargs):
         """Initialize field."""
         super().__init__(*args, **kwargs)
-        self.tags = tags or ALLOWED_HTML_TAGS
-        self.attrs = attrs or ALLOWED_HTML_ATTRS
+        self.tags = tags
+        self.attrs = attrs
 
     def _deserialize(self, value, attr, data, **kwargs):
         """Deserialize string by sanitizing HTML."""
