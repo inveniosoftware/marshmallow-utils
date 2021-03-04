@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016-2020 CERN.
+# Copyright (C) 2016-2021 CERN.
+# Copyright (C) 2021 Northwestern University.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -48,6 +49,8 @@ def test_isodate():
 
     assert ASchema().dump({'f': '1999-10-27'}) == {'f': '1999-10-27'}
     assert ASchema().dump({'f': 'invalid'}) == {}
+    assert ASchema().dump({'f': None}) == {}
+    assert ASchema().dump({'f': ''}) == {}
 
     assert ASchema().load({'f': '1999-10-27'}) == {'f': '1999-10-27'}
     pytest.raises(ValidationError, ASchema().load, {'f': 'invalid'})
