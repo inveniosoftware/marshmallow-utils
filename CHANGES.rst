@@ -1,6 +1,6 @@
 ..
-    Copyright (C) 2020 CERN.
-    Copyright (C) 2020 Northwestern University.
+    Copyright (C) 2020-2021 CERN.
+    Copyright (C) 2020-2021 Northwestern University.
 
     Marshmallow-Utils is free software; you can redistribute it and/or
     modify it under the terms of the MIT License; see LICENSE file for more
@@ -8,6 +8,10 @@
 
 Changes
 =======
+
+Version 0.3.6 (released 2021-03-04)
+
+- Serializes None ISODates by removing them.
 
 Version 0.3.5 (released 2021-01-25)
 

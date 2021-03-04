@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2020 CERN.
-# Copyright (C) 2020 Northwestern University.
+# Copyright (C) 2020-2021 CERN.
+# Copyright (C) 2020-2021 Northwestern University.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -12,4 +12,4 @@ This file is imported by ``marshmallow_utils.__init__``,
 and parsed by ``setup.py``.
 """
 
-__version__ = '0.3.5'
+__version__ = '0.3.6'
