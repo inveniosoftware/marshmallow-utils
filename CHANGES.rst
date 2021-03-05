@@ -9,6 +9,10 @@
 Changes
 =======
 
+Version 0.3.7 (released 2021-03-05)
+
+- Fix issue in SanitizedHTML to allow passing empty lists to remove all tags.
+
 Version 0.3.6 (released 2021-03-04)
 
 - Serializes None ISODates by removing them.
