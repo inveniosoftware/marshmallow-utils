@@ -41,6 +41,13 @@ def test_sanitized_html():
     assert ASchema().load({'f': 'an <script>evil()</script> example'}) == {
         'f': 'an evil() example'}
 
+    # Ensure empty lists to tags/attrs removes all tags.
+    class ASchema(Schema):
+        f = fields.SanitizedHTML(tags=[], attrs=[])
+
+    assert ASchema().load({'f': '<script>evil()</script><b>Hello</b>'}) == {
+        'f': 'evil()Hello'}
+
 
 def test_isodate():
     """Test ISO date formatted string."""
