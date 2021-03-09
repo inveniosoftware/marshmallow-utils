@@ -34,7 +34,7 @@ def test_sanitized_unicode():
 
 
 def test_sanitized_html():
-    """Test sanitized unicode field."""
+    """Test sanitized html field."""
     class ASchema(Schema):
         f = fields.SanitizedHTML()
 
@@ -47,6 +47,24 @@ def test_sanitized_html():
 
     assert ASchema().load({'f': '<script>evil()</script><b>Hello</b>'}) == {
         'f': 'evil()Hello'}
+
+
+def test_stripped_html():
+    """Test stripped html field."""
+    class ASchema(Schema):
+        f = fields.StrippedHTML()
+
+    assert ASchema().dump(
+        {'f': 'an <div><span>evil()</span> example</div>'}) == {
+        'f': 'an evil() example'}
+
+    # Ensure already escaped HTML is returned unescaped.
+    class ASchema(Schema):
+        f = fields.StrippedHTML()
+
+    assert ASchema().dump(
+        {'f': 'an <div>&lt;span&gt;example&lt;/span&gt;</div>'}) == {
+        'f': 'an <span>example</span>'}
 
 
 def test_isodate():

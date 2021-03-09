@@ -19,6 +19,7 @@ from .links import Link, Links
 from .nestedattr import NestedAttribute
 from .sanitizedhtml import ALLOWED_HTML_ATTRS, ALLOWED_HTML_TAGS, SanitizedHTML
 from .sanitizedunicode import SanitizedUnicode
+from .strippedhtml import StrippedHTML
 from .trimmed import TrimmedString
 
 __all__ = (
@@ -42,5 +43,6 @@ __all__ = (
     'NestedAttribute',
     'SanitizedHTML',
     'SanitizedUnicode',
+    'StrippedHTML',
     'TrimmedString',
 )
