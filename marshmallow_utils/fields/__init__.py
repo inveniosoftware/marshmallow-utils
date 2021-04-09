@@ -21,6 +21,7 @@ from .sanitizedhtml import ALLOWED_HTML_ATTRS, ALLOWED_HTML_TAGS, SanitizedHTML
 from .sanitizedunicode import SanitizedUnicode
 from .strippedhtml import StrippedHTML
 from .trimmed import TrimmedString
+from .tzdatetime import TZDateTime
 
 __all__ = (
     'ALLOWED_HTML_ATTRS',
@@ -45,4 +46,5 @@ __all__ = (
     'SanitizedUnicode',
     'StrippedHTML',
     'TrimmedString',
+    'TZDateTime',
 )

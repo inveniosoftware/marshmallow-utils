@@ -8,7 +8,7 @@
 
 """Test the marshmallow fields."""
 
-from datetime import date
+from datetime import date, datetime
 
 import pytest
 from marshmallow import EXCLUDE, Schema, ValidationError, missing
@@ -79,6 +79,16 @@ def test_isodate():
 
     assert ASchema().load({'f': '1999-10-27'}) == {'f': '1999-10-27'}
     pytest.raises(ValidationError, ASchema().load, {'f': 'invalid'})
+
+
+def test_istzdatetoime():
+    """Test ISO date formatted string with timezone."""
+    class ASchema(Schema):
+        f = fields.TZDateTime()
+
+    example_date = datetime(2017, 11, 28, 23, 55, 59, 342380)
+    expected_date = '2017-11-28T23:55:59.342380+00:00'
+    assert ASchema().dump({'f': example_date}) == {'f': expected_date}
 
 
 def test_generated():
