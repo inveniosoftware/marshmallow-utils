@@ -25,5 +25,6 @@ class TZDateTime(fields.DateTime):
 
     def _serialize(self, value, attr, obj, **kwargs):
         """Serialize a datetime to add the timezone (UTC)."""
-        return super()._serialize(
-            value.replace(tzinfo=self.timezone), attr, obj, **kwargs)
+        if value is not None:
+            value = value.replace(tzinfo=self.timezone)
+        return super()._serialize(value, attr, obj, **kwargs)

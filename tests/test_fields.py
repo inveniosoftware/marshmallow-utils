@@ -81,7 +81,7 @@ def test_isodate():
     pytest.raises(ValidationError, ASchema().load, {'f': 'invalid'})
 
 
-def test_istzdatetoime():
+def test_tzdatetime():
     """Test ISO date formatted string with timezone."""
     class ASchema(Schema):
         f = fields.TZDateTime()
@@ -89,6 +89,9 @@ def test_istzdatetoime():
     example_date = datetime(2017, 11, 28, 23, 55, 59, 342380)
     expected_date = '2017-11-28T23:55:59.342380+00:00'
     assert ASchema().dump({'f': example_date}) == {'f': expected_date}
+
+    # Test serialization of None values
+    assert ASchema().dump({'f': None}) == {'f': None}
 
 
 def test_generated():
