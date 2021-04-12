@@ -9,6 +9,10 @@
 Changes
 =======
 
+Version 0.3.10 (released 2021-04-12)
+
+- Fix TZDateTime field serialization of None values.
+
 Version 0.3.9 (released 2021-04-12)
 
 - Adds TZDateTime field.
