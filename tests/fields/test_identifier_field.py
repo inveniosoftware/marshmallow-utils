@@ -50,7 +50,7 @@ def test_invalid_duplicate_identifiers():
         }]
     }
 
-    with pytest.raises(ValidationError) as excinfo:
+    with pytest.raises(ValidationError):
         TestSchema().load(duplicate_identifiers)
 
 
@@ -63,7 +63,7 @@ def test_invalid_duplicate_identifiers_no_scheme_provided():
         }]
     }
 
-    with pytest.raises(ValidationError) as excinfo:
+    with pytest.raises(ValidationError):
         TestSchema().load(duplicate_identifiers)
 
 
@@ -72,5 +72,5 @@ def test_invalid_empty_identifiers():
         "identifiers": [{}]
     }
 
-    with pytest.raises(ValidationError) as excinfo:
+    with pytest.raises(ValidationError):
         TestSchema().load(duplicate_identifiers)

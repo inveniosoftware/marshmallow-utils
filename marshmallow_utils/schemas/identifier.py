@@ -23,42 +23,61 @@ class IdentifierSchema(Schema):
     identifier = SanitizedUnicode()
     scheme = SanitizedUnicode()
 
-    def __init__(self, allowed_schemes=None, allow_all=False,
-                 required=True, **kwargs):
+    def __init__(
+        self,
+        allowed_schemes=None,
+        forbidden_schemes=None,
+        fail_on_unknown=True,
+        identifier_required=True,
+        **kwargs,
+    ):
         """Constructor.
 
-        `allowed_schemas` is incompatible with `allow_all`.
-        If `allow_all` is set to `True` the `allowed_schemes` will ignored.
-
-        The `required` param applies to the `identifier` value.
+        :param allowed_schemes: allowed schemes or None if any allowed.
+        :param forbidden_schemes: forbidden schemes or None if any allowed.
+            Takes precedence over `allowed_schemes`.
+        :param fail_on_unknown: fail when the scheme of the identifier is not
+            one of the detected schemes with idutils.
+        :param identifier_required: True when the identifier value is required.
         """
-        self.allow_all = allow_all
-        self.allowed_schemes = None if allow_all else allowed_schemes
-        self.required = required
+        if allowed_schemes and forbidden_schemes:
+            raise ValueError(
+                "Bad arguments allowed_schemea and forbidden_schemes: "
+                "only one allowed."
+            )
+
+        self.forbidden_schemes = forbidden_schemes or set()
+        if forbidden_schemes:
+            self.allowed_schemes = set()
+        else:
+            self.allowed_schemes = allowed_schemes or set()
+        self.fail_on_unknown = fail_on_unknown
+        self.identifier_required = identifier_required
+
         super().__init__(**kwargs)
 
     def _detect_scheme(self, identifier):
-        """Detect the scheme of a given identifier."""
+        """Detect and return the scheme of a given identifier."""
         detected_schemes = idutils.detect_identifier_schemes(identifier)
 
-        if self.allow_all:
-            return detected_schemes[0] if detected_schemes else None
+        # force setting the scheme to one of the detected when
+        # allowed_schemes list is provided
+        if self.allowed_schemes:
+            for d in detected_schemes:
+                if d in self.allowed_schemes:
+                    return d
 
-        for d in detected_schemes:
-            if d in self.allowed_schemes:
-                return d
-
-        return None
+        first_or_none = detected_schemes[0] if detected_schemes else None
+        return first_or_none
 
     @pre_load(pass_many=False)
     def load_scheme(self, data, **kwargs):
         """Loads the schema of the identifier."""
         identifier = data.get("identifier")
-
-        # Bail if identifier is not provided or scheme is provided.
-        if not identifier or data.get("scheme"):
+        if not identifier:
             return data
 
+        # override any provided scheme if detected
         scheme = self._detect_scheme(identifier)
         if scheme:
             data["scheme"] = scheme
@@ -71,25 +90,31 @@ class IdentifierSchema(Schema):
         identifier = data.get("identifier")
         scheme = data.get("scheme")
 
-        # If requried
-        if not identifier and self.required:
+        if self.identifier_required and not identifier:
             raise ValidationError("Missing required identifier.")
 
+        if identifier and not scheme:
+            raise ValidationError(
+                f"Missing scheme value for identifier {identifier}."
+            )
+
         if identifier:
+            # at this point, `scheme` is set or validation failed earlier
             detected_schemes = idutils.detect_identifier_schemes(identifier)
 
-            # A scheme should be present at this stage detected or provided
-            if not scheme:
-                raise ValidationError("Missing required scheme.")
+            is_forbidden = scheme in self.forbidden_schemes
+            if is_forbidden:
+                raise ValidationError(f"Invalid scheme {scheme}.")
 
-            # Check if identifier is valid according to scheme.
-            if scheme not in detected_schemes:
-                raise ValidationError(f"Invalid identifier format or scheme.")
+            is_not_allowed = (
+                self.allowed_schemes and scheme not in self.allowed_schemes
+            )
+            if is_not_allowed:
+                raise ValidationError(f"Invalid scheme {scheme}.")
 
-            # Check if scheme is allowed
-            if not self.allow_all and scheme not in self.allowed_schemes:
-                raise ValidationError("Scheme not allowed. Must be "
-                                      f"one of {self.allowed_schemes}.")
+            unknown = scheme not in detected_schemes
+            if unknown and self.fail_on_unknown:
+                raise ValidationError(f"Invalid scheme {scheme}.")
 
     @post_load
     def normalize_identifier(self, data, **kwargs):
@@ -98,7 +123,7 @@ class IdentifierSchema(Schema):
 
         # It can be empty if not required
         if identifier:
-            # At this point scheme should exist or had failed
+            # at this point, `scheme` is set or validation failed earlier
             scheme = data["scheme"]
             data["identifier"] = idutils.normalize_pid(identifier, scheme)
 
