@@ -24,17 +24,20 @@ class IdentifierSchema(Schema):
     scheme = SanitizedUnicode()
 
     def __init__(self, allowed_schemes=None, allow_all=False,
-                 required=True, **kwargs):
+                 required=True, unknown_schemas_accepted=False, **kwargs):
         """Constructor.
 
         `allowed_schemas` is incompatible with `allow_all`.
         If `allow_all` is set to `True` the `allowed_schemes` will ignored.
+        If `unknown_schemas_accepted` is set to `True` all of the schemes
+        not in `allowed_schemes` will be also accepted.
 
         The `required` param applies to the `identifier` value.
         """
         self.allow_all = allow_all
         self.allowed_schemes = None if allow_all else allowed_schemes
         self.required = required
+        self.unknown_schemas_accepted = unknown_schemas_accepted
         super().__init__(**kwargs)
 
     def _detect_scheme(self, identifier):
@@ -83,7 +86,10 @@ class IdentifierSchema(Schema):
                 raise ValidationError("Missing required scheme.")
 
             # Check if identifier is valid according to scheme.
-            if scheme not in detected_schemes:
+            # NOTE: This is required to pass PEP-8
+            condition = scheme not in detected_schemes and \
+                not self.unknown_schemas_accepted
+            if condition:
                 raise ValidationError(f"Invalid identifier format or scheme.")
 
             # Check if scheme is allowed

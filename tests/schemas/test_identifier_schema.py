@@ -233,3 +233,24 @@ def test_invalid_custom_inheritance_not_required():
 
     with pytest.raises(ValidationError) as excinfo:
         loaded = CustomRequiredSchema().load(invalid_custom)
+
+
+def test_unknown_schema_accepting_unknown():
+    unknown_schema = {
+        "identifier": "0000-0001-6759-6273",
+        "scheme": "provided-scheme"
+    }
+
+    schema = IdentifierSchema(allow_all=True, unknown_schemas_accepted=True)
+    loaded = schema.load(unknown_schema)
+    assert unknown_schema == loaded == schema.dump(loaded)
+
+
+def test_unknown_schema_not_accepting_unknown():
+    unknown_schema = {
+        "identifier": "0000-0001-6759-6273",
+        "scheme": "provided-scheme"
+    }
+
+    with pytest.raises(ValidationError) as excinfo:
+        loaded = IdentifierSchema().load(unknown_schema)
