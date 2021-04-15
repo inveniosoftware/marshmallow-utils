@@ -23,32 +23,31 @@ class IdentifierSchema(Schema):
     identifier = SanitizedUnicode()
     scheme = SanitizedUnicode()
 
-    def __init__(self, allowed_schemes=None, allow_all=False,
+    def __init__(self, allowed=None, forbidden=None,
                  required=True, unknown_schemas_accepted=False, **kwargs):
         """Constructor.
 
-        `allowed_schemas` is incompatible with `allow_all`.
-        If `allow_all` is set to `True` the `allowed_schemes` will ignored.
+        `allowed` is incompatible with `forbidden`.
+        If `forbidden` has been defined (as not null),
+        `allowed` will be set to null.
         If `unknown_schemas_accepted` is set to `True` all of the schemes
-        not in `allowed_schemes` will be also accepted.
+        not in `allowed` will be also accepted.
 
         The `required` param applies to the `identifier` value.
         """
-        self.allow_all = allow_all
-        self.allowed_schemes = None if allow_all else allowed_schemes
+        self.forbidden = forbidden
+        self.allowed = None if forbidden else allowed
         self.required = required
         self.unknown_schemas_accepted = unknown_schemas_accepted
+
         super().__init__(**kwargs)
 
     def _detect_scheme(self, identifier):
         """Detect the scheme of a given identifier."""
         detected_schemes = idutils.detect_identifier_schemes(identifier)
 
-        if self.allow_all:
-            return detected_schemes[0] if detected_schemes else None
-
         for d in detected_schemes:
-            if d in self.allowed_schemes:
+            if d in self.allowed:
                 return d
 
         return None
@@ -57,7 +56,6 @@ class IdentifierSchema(Schema):
     def load_scheme(self, data, **kwargs):
         """Loads the schema of the identifier."""
         identifier = data.get("identifier")
-
         # Bail if identifier is not provided or scheme is provided.
         if not identifier or data.get("scheme"):
             return data
@@ -87,15 +85,26 @@ class IdentifierSchema(Schema):
 
             # Check if identifier is valid according to scheme.
             # NOTE: This is required to pass PEP-8
-            condition = scheme not in detected_schemes and \
+            condition_invalid = scheme not in detected_schemes and \
                 not self.unknown_schemas_accepted
-            if condition:
+            if condition_invalid:
                 raise ValidationError(f"Invalid identifier format or scheme.")
 
             # Check if scheme is allowed
-            if not self.allow_all and scheme not in self.allowed_schemes:
+            condition_allowed = self.forbidden is None and \
+                self.allowed is not None and \
+                scheme not in self.allowed
+            if condition_allowed:
                 raise ValidationError("Scheme not allowed. Must be "
-                                      f"one of {self.allowed_schemes}.")
+                                      f"one of {self.allowed}.")
+
+            # Check if scheme is not allowed
+            condition_forbidden = self.allowed is None and \
+                self.forbidden is not None and \
+                scheme in self.forbidden
+            if condition_forbidden:
+                raise ValidationError("Scheme disallowed. Must not be "
+                                      f"one of {self.forbidden}.")
 
     @post_load
     def normalize_identifier(self, data, **kwargs):

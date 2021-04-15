@@ -20,7 +20,7 @@ from marshmallow_utils.schemas import IdentifierSchema
 class TestSchema(Schema):
     identifiers = IdentifierSet(
         Nested(
-            partial(IdentifierSchema, allowed_schemes=["doi", "orcid"])
+            partial(IdentifierSchema, allowed=["doi", "orcid"])
         )
     )
 

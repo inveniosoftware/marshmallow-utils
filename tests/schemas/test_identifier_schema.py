@@ -21,7 +21,7 @@ def test_full_identifier():
         "scheme": "orcid"
     }
 
-    schema = IdentifierSchema(allowed_schemes=["orcid", "ror"])
+    schema = IdentifierSchema(allowed=["orcid", "ror"])
     loaded = schema.load(valid_full)
     # NOTE: Since the schemas return the dict itself, the loaded object
     # is the same than the input and dumped objects (dicts)
@@ -33,7 +33,7 @@ def test_identifier_auto_scheme():
         "identifier": "0000-0001-6759-6273",
     }
 
-    schema = IdentifierSchema(allowed_schemes=["orcid"])
+    schema = IdentifierSchema(allowed=["orcid"])
     loaded = schema.load(valid_identifier)
     # NOTE: Since the schemas return the dict itself, the loaded object
     # is the same than the input and dumped objects (dicts)
@@ -46,7 +46,7 @@ def test_identifier_not_provided():
         "scheme": "orcid"
     }
 
-    schema = IdentifierSchema(allowed_schemes=["orcid"])
+    schema = IdentifierSchema(allowed=["orcid"])
 
     with pytest.raises(ValidationError) as excinfo:
         schema.load(invalid_no_identifier)
@@ -58,7 +58,7 @@ def test_blank_identifier():
         "scheme": "orcid"
     }
 
-    schema = IdentifierSchema(allowed_schemes=["orcid"])
+    schema = IdentifierSchema(allowed=["orcid"])
     with pytest.raises(ValidationError) as excinfo:
         schema.load(invalid_blank_identifier)
 
@@ -69,7 +69,7 @@ def test_invalid_identifier():
         "scheme": "orcid"
     }
 
-    schema = IdentifierSchema(allowed_schemes=["orcid"])
+    schema = IdentifierSchema(allowed=["orcid"])
     with pytest.raises(ValidationError) as excinfo:
         schema.load(invalid_blank_identifier)
 
@@ -80,7 +80,7 @@ def test_autoschema_not_allowed():
         "scheme": "orcid"
     }
 
-    schema = IdentifierSchema(allowed_schemes=["ror"])
+    schema = IdentifierSchema(allowed=["ror"])
     with pytest.raises(ValidationError):
         schema.load(invalid_identifier)
 
@@ -91,7 +91,7 @@ def test_invalid_scheme_or_format():
         "scheme": "provided-scheme"
     }
 
-    schema = IdentifierSchema(allowed_schemes=["provided-scheme"])
+    schema = IdentifierSchema(allowed=["provided-scheme"])
     with pytest.raises(ValidationError) as excinfo:
         loaded = schema.load(invalid_identifier)
 
@@ -101,42 +101,16 @@ def test_autoschema_not_recognized():
         "identifier": "0000-0000-0000-00000000",
     }
 
-    schema = IdentifierSchema(allowed_schemes=["orcid"])
+    schema = IdentifierSchema(allowed=["orcid"])
     with pytest.raises(ValidationError) as excinfo:
         schema.load(invalid_identifier)
-
-
-def test_autoschema_allow_all_not_provided():
-    valid_identifier = {
-        "identifier": "0000-0001-6759-6273",
-    }
-
-    schema = IdentifierSchema(allow_all=True)
-    loaded = schema.load(valid_identifier)
-    # NOTE: Since the schemas return the dict itself, the loaded object
-    # is the same than the input and dumped objects (dicts)
-    valid_identifier["scheme"] == "orcid"
-    assert valid_identifier == loaded == schema.dump(loaded)
-
-
-def test_autoschema_allow_all_provided():
-    valid_identifier = {
-        "identifier": "0000-0001-6759-6273",
-        "scheme": "isni"
-    }
-
-    schema = IdentifierSchema(allow_all=True)
-    loaded = schema.load(valid_identifier)
-    # NOTE: Since the schemas return the dict itself, the loaded object
-    # is the same than the input and dumped objects (dicts)
-    assert valid_identifier == loaded == schema.dump(loaded)
 
 
 def test_identifier_not_required():
     """When the provided schema is allowed but different format."""
     valid_identifier = {}
 
-    schema = IdentifierSchema(allowed_schemes=["orcid"], required=False)
+    schema = IdentifierSchema(allowed=["orcid"], required=False)
     loaded = schema.load(valid_identifier)
     assert valid_identifier == loaded == schema.dump(loaded)
 
@@ -153,7 +127,7 @@ def test_full_identifier_not_required():
         "scheme": "orcid"
     }
 
-    schema = IdentifierSchema(allowed_schemes=["orcid"], required=False)
+    schema = IdentifierSchema(allowed=["orcid"], required=False)
     loaded = schema.load(valid_full)
     # NOTE: Since the schemas return the dict itself, the loaded object
     # is the same than the input and dumped objects (dicts)
@@ -165,7 +139,7 @@ def test_identifier_auto_scheme_not_required():
         "identifier": "0000-0001-6759-6273",
     }
 
-    schema = IdentifierSchema(allowed_schemes=["orcid"], required=False)
+    schema = IdentifierSchema(allowed=["orcid"], required=False)
     loaded = schema.load(valid_identifier)
     # NOTE: Since the schemas return the dict itself, the loaded object
     # is the same than the input and dumped objects (dicts)
@@ -178,7 +152,7 @@ class CustomNotRequiredSchema(IdentifierSchema):
 
     def __init__(self, **kwargs):
         """Constructor."""
-        super().__init__(allow_all=True, required=False, **kwargs)
+        super().__init__(required=False, **kwargs)
 
     extra = Str(required=True)
 
@@ -204,7 +178,7 @@ class CustomRequiredSchema(IdentifierSchema):
 
     def __init__(self, **kwargs):
         """Constructor."""
-        super().__init__(allow_all=True, **kwargs)
+        super().__init__(**kwargs)
 
     # Not required to see the failure comes form the identifier
     extra = Str()
@@ -241,7 +215,8 @@ def test_unknown_schema_accepting_unknown():
         "scheme": "provided-scheme"
     }
 
-    schema = IdentifierSchema(allow_all=True, unknown_schemas_accepted=True)
+    schema = IdentifierSchema(unknown_schemas_accepted=True,
+                              allowed=['provided-scheme'])
     loaded = schema.load(unknown_schema)
     assert unknown_schema == loaded == schema.dump(loaded)
 
@@ -254,3 +229,25 @@ def test_unknown_schema_not_accepting_unknown():
 
     with pytest.raises(ValidationError) as excinfo:
         loaded = IdentifierSchema().load(unknown_schema)
+
+
+def test_not_forbidden_schema():
+    valid_full = {
+        "identifier": "0000-0001-6759-6273",
+        "scheme": "orcid"
+    }
+
+    schema = IdentifierSchema()
+    loaded = schema.load(valid_full)
+
+    assert valid_full == loaded == schema.dump(loaded)
+
+
+def test_forbidden_schema():
+    valid_full = {
+        "identifier": "0000-0001-6759-6273",
+        "scheme": "orcid"
+    }
+
+    with pytest.raises(ValidationError) as excinfo:
+        loaded = IdentifierSchema(forbidden=["orcid", "ror"]).load(valid_full)
