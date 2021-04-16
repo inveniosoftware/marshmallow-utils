@@ -9,6 +9,10 @@
 Changes
 =======
 
+Version 0.4.0 (released 2021-04-16)
+
+- Change IdentifierScheme API to allow schemas unknown by IDUtils.
+
 Version 0.3.10 (released 2021-04-12)
 
 - Fix TZDateTime field serialization of None values.
