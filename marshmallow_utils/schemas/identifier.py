@@ -66,7 +66,6 @@ class IdentifierSchema(Schema):
         # force setting the scheme to one of the detected when
         # allowed_schemes list is provided
         if self.allowed_schemes:
-            print("--------------in allowed")
             for d in detected_schemes:
                 if d in self.allowed_schemes:
                     return d
@@ -85,8 +84,6 @@ class IdentifierSchema(Schema):
         scheme = self._detect_scheme(identifier, data.get("scheme"))
         if scheme:
             data["scheme"] = scheme
-            print(data)
-            print("-------------------------------")
         return data
 
     @validates_schema
