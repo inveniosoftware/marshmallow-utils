@@ -34,6 +34,8 @@ from marshmallow_utils.schemas import IdentifierSchema
 #                                forbidden = [isbn]
 # orcid  | orcid           | forbidden = [isbn]        | passed
 # bar    | foo             | fail_on_unknown = False   | passed
+# bar    | orcid           | fail_on_unknown = False   | error
+# orcid  | [isbn,orcid]    |                          | passed (scheme=orcid)
 
 
 def test_no_identifier_but_required_should_fail():
@@ -177,6 +179,28 @@ def test_allow_unknown_should_pass():
     schema = IdentifierSchema(fail_on_unknown=False)
     data = schema.load(valid_scheme_identifier)
     assert valid_scheme_identifier == data == schema.dump(data)
+
+
+def test_provided_scheme_should_pass():
+    valid_scheme_identifier = {
+        "identifier": "0000-0001-6759-6273",
+        "scheme": "isni"
+    }
+
+    schema = IdentifierSchema()
+    data = schema.load(valid_scheme_identifier)
+    assert valid_scheme_identifier == data == schema.dump(data)
+
+
+def test_unknown_scheme_identifier_allowed_should_fail():
+    valid_scheme_identifier = {
+       "identifier": "0000-0001-6759-6273",
+       "scheme": "bar"
+    }
+
+    schema = IdentifierSchema(fail_on_unknown=False)
+    with pytest.raises(ValidationError):
+        schema.load(valid_scheme_identifier)
 
 
 class CustomExtraRequiredSchema(IdentifierSchema):

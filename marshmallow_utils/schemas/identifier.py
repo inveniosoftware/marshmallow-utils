@@ -56,13 +56,17 @@ class IdentifierSchema(Schema):
 
         super().__init__(**kwargs)
 
-    def _detect_scheme(self, identifier):
+    def _detect_scheme(self, identifier, scheme):
         """Detect and return the scheme of a given identifier."""
         detected_schemes = idutils.detect_identifier_schemes(identifier)
+
+        if scheme in detected_schemes:
+            return scheme
 
         # force setting the scheme to one of the detected when
         # allowed_schemes list is provided
         if self.allowed_schemes:
+            print("--------------in allowed")
             for d in detected_schemes:
                 if d in self.allowed_schemes:
                     return d
@@ -78,10 +82,11 @@ class IdentifierSchema(Schema):
             return data
 
         # override any provided scheme if detected
-        scheme = self._detect_scheme(identifier)
+        scheme = self._detect_scheme(identifier, data.get("scheme"))
         if scheme:
             data["scheme"] = scheme
-
+            print(data)
+            print("-------------------------------")
         return data
 
     @validates_schema
@@ -89,7 +94,6 @@ class IdentifierSchema(Schema):
         """Validate the identifier format and scheme."""
         identifier = data.get("identifier")
         scheme = data.get("scheme")
-
         if self.identifier_required and not identifier:
             raise ValidationError("Missing required identifier.")
 
@@ -101,7 +105,6 @@ class IdentifierSchema(Schema):
         if identifier:
             # at this point, `scheme` is set or validation failed earlier
             detected_schemes = idutils.detect_identifier_schemes(identifier)
-
             is_forbidden = scheme in self.forbidden_schemes
             if is_forbidden:
                 raise ValidationError(f"Invalid scheme {scheme}.")
@@ -126,5 +129,4 @@ class IdentifierSchema(Schema):
             # at this point, `scheme` is set or validation failed earlier
             scheme = data["scheme"]
             data["identifier"] = idutils.normalize_pid(identifier, scheme)
-
         return data
