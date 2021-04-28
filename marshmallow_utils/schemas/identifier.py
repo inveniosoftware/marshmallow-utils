@@ -116,6 +116,14 @@ class IdentifierSchema(Schema):
             if unknown and self.fail_on_unknown:
                 raise ValidationError(f"Invalid scheme {scheme}.")
 
+            try:
+                validate_given_func = getattr(idutils, f"is_{scheme}")
+                if validate_given_func and not validate_given_func(identifier):
+                    raise ValidationError(
+                        f"Invalid value {identifier} for scheme {scheme}.")
+            except AttributeError:
+                pass
+
     @post_load
     def normalize_identifier(self, data, **kwargs):
         """Normalizes the identifier based on the scheme."""
