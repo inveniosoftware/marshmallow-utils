@@ -14,231 +14,190 @@ from marshmallow.fields import Str
 
 from marshmallow_utils.schemas import IdentifierSchema
 
-# Test cases when identifier provided:
+
+def validate_other(identifier):
+    """Validates a numeric identifier."""
+    return identifier.isnumeric()
+
+
 #
-# scheme | detected scheme | constructor params        | success/error
-#            (identifier)
-# -------| -----------     | ------------------------- | -
-# orcid  | orcid           |                           | passed
-# orcid  | isbn            |                           | error
-# orcid  | foo             |                           | error
-#   -    | orcid           |                           | passed (scheme=orcid)
-#   -    | foo             |                           | error
-# orcid  | orcid           | allowed = [orcid]         | passed
-# orcid  | orcid           | allowed = [isbn]          | error
-# bar    | [isbn,orcid]    | allowed = [orcid]         | passed (scheme=orcid)
-# orcid  | orcid           | forbidden = [orcid]       | error
-# orcid  | orcid           | allowed = [orcid] \       | error
-#                                forbidden = [orcid]
-# orcid  | orcid           | allowed = [foo] \         | error
-#                                forbidden = [isbn]
-# orcid  | orcid           | forbidden = [isbn]        | passed
-# bar    | foo             | fail_on_unknown = False   | passed
+# Test cases when identifier is not provided:
+#
+def test_invalid_allowed_schemes():
+    with pytest.raises(ValidationError):
+        IdentifierSchema(allowed_schemes=[1, 2, 3])
 
 
-def test_no_identifier_but_required_should_fail():
-    schema = IdentifierSchema()
+def test_identifier_required_no_value():
+    schema = IdentifierSchema(allowed_schemes=[("dummy", validate_other)])
     with pytest.raises(ValidationError):
         schema.load({})
 
 
-def test_no_scheme_no_identifier_not_required_should_pass():
-    schema = IdentifierSchema(identifier_required=False)
+def test_identifier_not_required_no_value():
+    schema = IdentifierSchema(
+        allowed_schemes=[("dummy", validate_other)],
+        identifier_required=False
+    )
     data = schema.load({})
     assert data == {}
 
 
-def test_schema_no_identifier_but_required_should_fail():
+def test_identifier_required_only_scheme():
+    schema = IdentifierSchema(allowed_schemes=[("dummy", validate_other)])
     only_scheme = {"scheme": "orcid"}
-    schema = IdentifierSchema()
-    with pytest.raises(ValidationError):
-        schema.load(only_scheme)
-
-    only_scheme = {"identifier": "", "scheme": "orcid"}
     with pytest.raises(ValidationError):
         schema.load(only_scheme)
 
 
-def test_scheme_and_identifier_match_should_pass():
-    valid_scheme_identifier = {
-        "identifier": "0000-0001-6759-6273",
-        "scheme": "orcid",
-    }
-
-    schema = IdentifierSchema()
-    data = schema.load(valid_scheme_identifier)
-    # NOTE: Since the schemas return the dict itself, the loaded object
-    # is the same than the input and dumped objects (dicts)
-    assert valid_scheme_identifier == data == schema.dump(data)
-
-
-def test_scheme_and_identifier_no_match_should_pass():
-    wrong_scheme = {"identifier": "0000-0001-6759-6273", "scheme": "isbn"}
-
-    schema = IdentifierSchema()
-    data = schema.load(wrong_scheme)
-
-    correct_scheme = {"scheme": "orcid"}
-    correct_scheme.update(wrong_scheme)
-    assert correct_scheme == data == schema.dump(data)
-
-
-def test_only_identifier_should_pass():
-    only_identifier = {
-        "identifier": "0000-0001-6759-6273",
-    }
-
-    schema = IdentifierSchema()
-    data = schema.load(only_identifier)
-
-    with_scheme = {"scheme": "orcid"}
-    with_scheme.update(only_identifier)
-    assert with_scheme == data == schema.dump(data)
-
-
-def test_only_unknown_identifier_should_fail():
-    only_unknown_identifier = {
-        "identifier": "foobar",
-    }
-
-    schema = IdentifierSchema()
+def test_identifier_required_empty_value():
+    schema = IdentifierSchema(allowed_schemes=[("dummy", validate_other)])
+    empty_identifier = {"identifier": "", "scheme": "orcid"}
     with pytest.raises(ValidationError):
-        schema.load(only_unknown_identifier)
+        schema.load(empty_identifier)
+
+#
+# Test cases when identifier provided:
+#
+
+# This schema accepts two attributes: scheme and identifier. The use
+# cases are provided in the following table, `-` means that the value
+# does not apply.
+
+# 1- The scheme is given -> is allowed (idutils) -> validate -> pass
+# 2- The scheme is given -> is NOT allowed -> fail
+# 3- The scheme is given -> allowed is empty -> fail
+# 4- The scheme is given -> is allowed (custom)  -> validate -> pass
+# 5- The scheme is NOT given -> is detected -> is allowed -> validate -> pass
+# 6- The scheme is NOT given -> is detected -> is NOT allowed -> fail
+# 7- The scheme is NOT given -> is detected -> allowed is empty -> fail
+# 8- The scheme is NOT given -> is detected (several) -> is allowed (one of them) -> pass  # noqa
+# 9- The scheme is NOT given -> is detected (several) -> is allowed (not the first) -> pass  # noqa
+# 10- The scheme is NOT given -> is NOT detected -> fail
+
+# | given  | detected |
+# | scheme |  scheme  |  alllowed schemes   | given identifier | result |
+# |:------:|:--------:|:-------------------:|:----------------:|:------:|
+# |   DOI  |     -    |        [DOI]        | 10.12345/foo.bar |  pass  |
+# |   DOI  |     -    |       [Other]       | 10.12345/foo.bar |  fail  |
+# |   DOI  |     -    |         []          | 10.12345/foo.bar |  fail  |
+# |  Other |     -    | [(Other, val_func)] |     123456       |  pass  |
+# |    -   |   [DOI]  |        [DOI]        | 10.12345/foo.bar |  pass  |
+# |    -   |   [DOI]  |       [Other]       | 10.12345/foo.bar |  fail  |
+# |    -   |   [DOI]  |         []          | 10.12345/foo.bar |  fail  |
+# |    -   |  [isni,  |       [isni]        |     0317-8471    |  pass  |  (scheme = isni)  # noqa
+# |        |  orcid]  |                     |                  |        |
+# |    -   |  [isni,  |       [orcid]       |     0317-8471    |  pass  |  (scheme = orcid)  # noqa
+# |        |  orcid]  |                     |                  |        |
+# |    -   |     -    |       [isni]        |    00:11:22:33   |  fail  |
 
 
-def test_valid_scheme_identifier_allowed_should_pass():
-    valid_scheme_identifier = {
-        "identifier": "0000-0001-6759-6273",
-        "scheme": "orcid",
+def test_given_and_allowed_scheme_valid_value():  # 1
+    schema = IdentifierSchema(allowed_schemes=["doi"])
+    valid_doi = {
+        "scheme": "doi",
+        "identifier": "10.12345/foo.bar"
     }
-
-    schema = IdentifierSchema(allowed_schemes=["orcid"])
-    data = schema.load(valid_scheme_identifier)
-    assert valid_scheme_identifier == data == schema.dump(data)
+    data = schema.load(valid_doi)
+    assert data == valid_doi
 
 
-def test_valid_scheme_identifier_not_allowed_should_fail():
-    valid_scheme_identifier = {
-        "identifier": "0000-0001-6759-6273",
-        "scheme": "orcid",
+def test_given_and_allowed_scheme_invalid_value():  # 1
+    schema = IdentifierSchema(allowed_schemes=["doi"])
+    invalid_doi = {
+        "scheme": "doi",
+        "identifier": "12345"
     }
-
-    schema = IdentifierSchema(allowed_schemes=["isbn"])
     with pytest.raises(ValidationError):
-        schema.load(valid_scheme_identifier)
+        schema.load(invalid_doi)
 
 
-def test_invalid_scheme_detected_identifier_allowed_should_pass():
-    invalid_scheme_identifier = {
-        "identifier": "0000-0001-6759-6273",
-        "scheme": "bar",
+def test_given_and_not_allowed_scheme_valid_value():  # 2
+    schema = IdentifierSchema(allowed_schemes=[("other", validate_other)])
+    valid_doi = {
+        "scheme": "doi",
+        "identifier": "10.12345/foo.bar"
     }
-
-    schema = IdentifierSchema(allowed_schemes=["isbn", "orcid"])
-    data = schema.load(invalid_scheme_identifier)
-
-    with_scheme = {"scheme": "orcid"}
-    with_scheme.update(invalid_scheme_identifier)
-    assert with_scheme == data == schema.dump(data)
-
-
-def test_valid_scheme_identifier_other_forbidden_should_pass():
-    valid_scheme_identifier = {
-        "identifier": "0000-0001-6759-6273",
-        "scheme": "orcid",
-    }
-
-    schema = IdentifierSchema(forbidden_schemes=["isbn"])
-    data = schema.load(valid_scheme_identifier)
-    assert valid_scheme_identifier == data == schema.dump(data)
-
-
-def test_valid_scheme_identifier_forbidden_should_fail():
-    valid_scheme_identifier = {
-        "identifier": "0000-0001-6759-6273",
-        "scheme": "orcid",
-    }
-
-    schema = IdentifierSchema(forbidden_schemes=["orcid"])
     with pytest.raises(ValidationError):
-        schema.load(valid_scheme_identifier)
+        schema.load(valid_doi)
 
 
-def test_mix_allowed_forbidden_should_fail():
-    with pytest.raises(ValueError):
-        IdentifierSchema(
-            allowed_schemes=["orcid"], forbidden_schemes=["orcid"]
-        )
+def test_given_and_allowed_empty_scheme_valid_value():  # 3 and 7
+    # NOTE: does not allow the instantiation with emtpy allowed schemes
+    with pytest.raises(ValidationError):
+        IdentifierSchema(allowed_schemes=[])
 
 
-def test_allow_unknown_should_pass():
-    valid_scheme_identifier = {"identifier": "foo", "scheme": "bar"}
-
-    schema = IdentifierSchema(fail_on_unknown=False)
-    data = schema.load(valid_scheme_identifier)
-    assert valid_scheme_identifier == data == schema.dump(data)
-
-
-class CustomExtraRequiredSchema(IdentifierSchema):
-    """Custom schema."""
-
-    def __init__(self, **kwargs):
-        """Constructor."""
-        super().__init__(**kwargs)
-
-    extra = Str(required=True)
-
-
-def test_custom_inheritance_extra_provided_should_pass():
-    valid_custom = {
-        "extra": "random",
-        "identifier": "0000-0001-6759-6273",
+def test_given_custom_and_allowed_scheme_valid_value():  # 4
+    schema = IdentifierSchema(allowed_schemes=[("other", validate_other)])
+    valid_other = {
+        "scheme": "Other",  # to check the normalized lowercase
+        "identifier": "12345"
     }
 
-    loaded = CustomExtraRequiredSchema().load(valid_custom)
-    assert valid_custom == loaded == CustomExtraRequiredSchema().dump(loaded)
+    data = schema.load(valid_other)
+    assert data == valid_other
 
 
-def test_custom_inheritance_extra_not_provided_but_required_should_fail():
-    invalid_custom = {}
-
-    with pytest.raises(ValidationError):
-        CustomExtraRequiredSchema().load(invalid_custom)
-
-
-class CustomExtraNotRequiredSchema(IdentifierSchema):
-    """Custom schema."""
-
-    def __init__(self, **kwargs):
-        """Constructor."""
-        super().__init__(**kwargs)
-
-    # Not required to see the failure comes from the identifier
-    extra = Str()
-
-
-def test_custom_inheritance_extra_with_identifier_should_pass():
-    valid_custom = {
-        "extra": "random",
-        "identifier": "0000-0001-6759-6273",
-        "scheme": "orcid",
-    }
-
-    loaded = CustomExtraNotRequiredSchema().load(valid_custom)
-    assert (
-        valid_custom == loaded == CustomExtraNotRequiredSchema().dump(loaded)
-    )
-
-
-def test_custom_inheritance_extra_without_identifier_should_fail():
-    invalid_custom = {}
-
-    with pytest.raises(ValidationError):
-        CustomExtraNotRequiredSchema().load(invalid_custom)
-
-    invalid_custom = {
-        "extra": "random",
+def test_given_custom_and_allowed_scheme_invalid_value():  # 4
+    schema = IdentifierSchema(allowed_schemes=[("other", validate_other)])
+    invalid_other = {
+        "scheme": "other",
+        "identifier": "12345abc"
     }
 
     with pytest.raises(ValidationError):
-        CustomExtraNotRequiredSchema().load(invalid_custom)
+        schema.load(invalid_other)
+
+
+def test_detected_and_allowed_scheme_valid_value():  # 5
+    schema = IdentifierSchema(allowed_schemes=["doi"])
+    valid_doi = {
+        "identifier": "10.12345/foo.bar"
+    }
+    data = schema.load(valid_doi)
+
+    valid_doi["scheme"] = "doi"
+    assert data == valid_doi
+
+
+def test_detected_and_not_allowed_scheme_valid_value():  # 6
+    schema = IdentifierSchema(allowed_schemes=[("other", validate_other)])
+    valid_doi = {
+        "identifier": "10.12345/foo.bar"
+    }
+
+    with pytest.raises(ValidationError):
+        schema.load(valid_doi)
+
+
+def test_detected_and_allowed_scheme_respect_detection_order():  # 8
+    schema = IdentifierSchema(allowed_schemes=["orcid", "isni"])
+    valid_orcid = {
+        "identifier": "0000-0001-6759-6273"
+    }
+    data = schema.load(valid_orcid)
+
+    valid_orcid["scheme"] = "orcid"
+    assert data == valid_orcid
+
+
+def test_detected_and_allowed_scheme_second_detected():  # 8
+    schema = IdentifierSchema(allowed_schemes=["isni"])
+    valid_isni = {
+        "identifier": "0000-0001-6759-6273"
+    }
+    data = schema.load(valid_isni)
+
+    valid_isni["scheme"] = "isni"
+    assert data == valid_isni
+
+
+def test_not_given_not_detected_scheme_for_identifier():  # 10
+    schema = IdentifierSchema(allowed_schemes=["isni"])
+    invalid_no_scheme = {
+        "identifier": "00:11:22:33"
+    }
+
+    with pytest.raises(ValidationError):
+        schema.load(invalid_no_scheme)

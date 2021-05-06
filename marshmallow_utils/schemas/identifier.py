@@ -23,52 +23,51 @@ class IdentifierSchema(Schema):
     identifier = SanitizedUnicode()
     scheme = SanitizedUnicode()
 
-    def __init__(
-        self,
-        allowed_schemes=None,
-        forbidden_schemes=None,
-        fail_on_unknown=True,
-        identifier_required=True,
-        **kwargs,
-    ):
+    def __init__(self, allowed_schemes, identifier_required=True, **kwargs):
         """Constructor.
 
-        :param allowed_schemes: allowed schemes or None if any allowed.
-        :param forbidden_schemes: forbidden schemes or None if any allowed.
-            Takes precedence over `allowed_schemes`.
-        :param fail_on_unknown: fail when the scheme of the identifier is not
-            one of the detected schemes with idutils.
+        :param allowed_schemes: a list of allowed schemes. Accepts a string
+            or a tuple. If IDUtils cannot validate it, it expects a tuple
+            with (scheme_name, validation_function).
         :param identifier_required: True when the identifier value is required.
         """
-        if allowed_schemes and forbidden_schemes:
-            raise ValueError(
-                "Bad arguments allowed_schemea and forbidden_schemes: "
-                "only one allowed."
-            )
-
-        self.forbidden_schemes = forbidden_schemes or set()
-        if forbidden_schemes:
-            self.allowed_schemes = set()
-        else:
-            self.allowed_schemes = allowed_schemes or set()
-        self.fail_on_unknown = fail_on_unknown
         self.identifier_required = identifier_required
+
+        if not allowed_schemes:
+            raise ValidationError(
+                    "allowed_schemes must be a list of string(s) " +
+                    "and/or tuple(s)")
+
+        self.allowed_schemes = {}
+        for scheme in allowed_schemes:
+            # if it is a string it should be present in IDUtils
+            if isinstance(scheme, str):
+                try:
+                    scheme = scheme.lower()
+                    val_func = getattr(idutils, f"is_{scheme}")
+                    self.allowed_schemes[scheme] = val_func
+                except AttributeError:
+                    raise ValidationError(
+                        f"Validation function for scheme {scheme} not " +
+                        "found. Please provide one.")
+            # tuple, (scheme, validation_function)
+            elif isinstance(scheme, tuple):
+                self.allowed_schemes[scheme[0].lower()] = scheme[1]
+            else:
+                raise ValidationError(
+                    "allowed_schemes must be a list of string(s) " +
+                    "and/or tuple(s)")
 
         super().__init__(**kwargs)
 
-    def _detect_scheme(self, identifier):
-        """Detect and return the scheme of a given identifier."""
-        detected_schemes = idutils.detect_identifier_schemes(identifier)
+    def _intersect_with_order(self, detected_schemes):
+        """Returns the first detected scheme that is allowed."""
+        allowed_schemes = set(self.allowed_schemes.keys())
+        for detected in detected_schemes:
+            if detected in allowed_schemes:
+                return detected
 
-        # force setting the scheme to one of the detected when
-        # allowed_schemes list is provided
-        if self.allowed_schemes:
-            for d in detected_schemes:
-                if d in self.allowed_schemes:
-                    return d
-
-        first_or_none = detected_schemes[0] if detected_schemes else None
-        return first_or_none
+        return None
 
     @pre_load(pass_many=False)
     def load_scheme(self, data, **kwargs):
@@ -77,10 +76,20 @@ class IdentifierSchema(Schema):
         if not identifier:
             return data
 
-        # override any provided scheme if detected
-        scheme = self._detect_scheme(identifier)
-        if scheme:
-            data["scheme"] = scheme
+        scheme = data.get("scheme")
+        if not scheme:
+            detected_schemes = idutils.detect_identifier_schemes(identifier)
+        else:
+            # if given, use it
+            detected_schemes = [scheme.lower()]
+
+        # check if given or any detected is allowed
+        data["scheme"] = self._intersect_with_order(detected_schemes)
+
+        if not data["scheme"]:
+            # no match between detected and allowed
+            # will fail at validation step
+            data.pop("scheme", None)
 
         return data
 
@@ -95,26 +104,16 @@ class IdentifierSchema(Schema):
 
         if identifier and not scheme:
             raise ValidationError(
-                f"Missing scheme value for identifier {identifier}."
+                f"Missing or invalid scheme for identifier {identifier}."
             )
 
         if identifier:
             # at this point, `scheme` is set or validation failed earlier
-            detected_schemes = idutils.detect_identifier_schemes(identifier)
-
-            is_forbidden = scheme in self.forbidden_schemes
-            if is_forbidden:
-                raise ValidationError(f"Invalid scheme {scheme}.")
-
-            is_not_allowed = (
-                self.allowed_schemes and scheme not in self.allowed_schemes
-            )
-            if is_not_allowed:
-                raise ValidationError(f"Invalid scheme {scheme}.")
-
-            unknown = scheme not in detected_schemes
-            if unknown and self.fail_on_unknown:
-                raise ValidationError(f"Invalid scheme {scheme}.")
+            validation_function = self.allowed_schemes[scheme]
+            if not validation_function(identifier):
+                raise ValidationError(
+                    f"Invalid value {identifier} for scheme {scheme}."
+                )
 
     @post_load
     def normalize_identifier(self, data, **kwargs):
@@ -125,6 +124,7 @@ class IdentifierSchema(Schema):
         if identifier:
             # at this point, `scheme` is set or validation failed earlier
             scheme = data["scheme"]
+            # will return the same value if not able to normalize by idutils
             data["identifier"] = idutils.normalize_pid(identifier, scheme)
 
         return data
