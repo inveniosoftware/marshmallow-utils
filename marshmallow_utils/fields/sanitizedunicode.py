@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016-2020 CERN.
+# Copyright (C) 2016-2021 CERN.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
 
 """Sanitized Unicode string field."""
 
-from ftfy import fix_text
 from marshmallow import fields
 
-from .trimmed import TrimmedString
+from ..html import sanitize_unicode
 
 
-class SanitizedUnicode(TrimmedString):
+class SanitizedUnicode(fields.String):
     """String field that sanitizes and fixes problematic unicode characters."""
 
     UNWANTED_CHARACTERS = {
@@ -21,23 +20,8 @@ class SanitizedUnicode(TrimmedString):
         u'\u200b',
     }
 
-    def is_valid_xml_char(self, char):
-        """Check if a character is valid based on the XML specification."""
-        codepoint = ord(char)
-        return (0x20 <= codepoint <= 0xD7FF or
-                codepoint in (0x9, 0xA, 0xD) or
-                0xE000 <= codepoint <= 0xFFFD or
-                0x10000 <= codepoint <= 0x10FFFF)
-
     def _deserialize(self, value, attr, data, **kwargs):
         """Deserialize sanitized string value."""
         value = super()._deserialize(
             value, attr, data, **kwargs)
-        value = fix_text(value)
-
-        # NOTE: This `join` might be ineffiecient... There's a solution with a
-        # large compiled regex lying around, but needs a lot of tweaking.
-        value = ''.join(filter(self.is_valid_xml_char, value))
-        for char in self.UNWANTED_CHARACTERS:
-            value = value.replace(char, '')
-        return value
+        return sanitize_unicode(value, unwanted_chars=self.UNWANTED_CHARACTERS)

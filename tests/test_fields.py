@@ -59,12 +59,14 @@ def test_stripped_html():
         'f': 'an evil() example'}
 
     # Ensure already escaped HTML is returned unescaped.
-    class ASchema(Schema):
-        f = fields.StrippedHTML()
-
     assert ASchema().dump(
         {'f': 'an <div>&lt;span&gt;example&lt;/span&gt;</div>'}) == {
         'f': 'an <span>example</span>'}
+
+    # Unwanted unicode chars from HTML entities should also be removed.
+    assert ASchema().dump(
+        {'f': 'an &#8203;&quot;example&quot;'}) == {
+        'f': 'an "example"'}
 
 
 def test_isodate():

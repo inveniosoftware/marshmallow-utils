@@ -7,10 +7,9 @@
 
 """HTML sanitized string field."""
 
-import html
-
-import bleach
 from marshmallow import fields
+
+from ..html import strip_html
 
 
 class StrippedHTML(fields.String):
@@ -24,12 +23,4 @@ class StrippedHTML(fields.String):
         """Serialize string by stripping HTML entities."""
         value = super()._serialize(
             value, attr, data, **kwargs)
-        # Disallow all HTML tags and attributes
-        value = bleach.clean(
-            value,
-            tags=[],
-            attributes=[],
-            strip=True,
-        ).strip()
-        # If value has already escaped HTML then return the unescaped value
-        return html.unescape(value)
+        return strip_html(value)
