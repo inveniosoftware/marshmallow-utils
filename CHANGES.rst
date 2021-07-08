@@ -9,6 +9,11 @@
 Changes
 =======
 
+Version 0.5.0 (released 2021-07-08)
+
+- Refactored to make it easier to use sanitization functions outside of
+  Marshmallow fields.
+
 Version 0.4.0 (released 2021-04-16)
 
 - Change IdentifierScheme API to allow schemas unknown by IDUtils.
