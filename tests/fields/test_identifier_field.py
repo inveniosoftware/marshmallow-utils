@@ -9,6 +9,7 @@
 
 from functools import partial
 
+import idutils
 import pytest
 from marshmallow import Schema, ValidationError
 from marshmallow.fields import Nested
@@ -18,9 +19,13 @@ from marshmallow_utils.schemas import IdentifierSchema
 
 
 class TestSchema(Schema):
+    allowed_schemes = {
+        "orcid": {"label": "ORCiD", "validator": idutils.is_orcid},
+        "doi": {"label": "DOI", "validator": idutils.is_doi}
+    }
     identifiers = IdentifierSet(
         Nested(
-            partial(IdentifierSchema, allowed_schemes=["doi", "orcid"])
+            partial(IdentifierSchema, allowed_schemes=allowed_schemes)
         )
     )
 

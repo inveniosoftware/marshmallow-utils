@@ -7,7 +7,7 @@
 
 """Tests for marshmallow Identifiers schema."""
 
-
+import idutils
 import pytest
 from marshmallow import ValidationError
 from marshmallow.fields import Str
@@ -20,23 +20,23 @@ def validate_other(identifier):
     return identifier.isnumeric()
 
 
+dummy_allowed_schemes = {
+    "dummy": {"label": "Dummy", "validator": validate_other}
+}
 #
 # Test cases when identifier is not provided:
 #
-def test_invalid_allowed_schemes():
-    with pytest.raises(ValidationError):
-        IdentifierSchema(allowed_schemes=[1, 2, 3])
 
 
 def test_identifier_required_no_value():
-    schema = IdentifierSchema(allowed_schemes=[("dummy", validate_other)])
+    schema = IdentifierSchema(allowed_schemes=dummy_allowed_schemes)
     with pytest.raises(ValidationError):
         schema.load({})
 
 
 def test_identifier_not_required_no_value():
     schema = IdentifierSchema(
-        allowed_schemes=[("dummy", validate_other)],
+        allowed_schemes=dummy_allowed_schemes,
         identifier_required=False
     )
     data = schema.load({})
@@ -44,14 +44,14 @@ def test_identifier_not_required_no_value():
 
 
 def test_identifier_required_only_scheme():
-    schema = IdentifierSchema(allowed_schemes=[("dummy", validate_other)])
+    schema = IdentifierSchema(allowed_schemes=dummy_allowed_schemes)
     only_scheme = {"scheme": "orcid"}
     with pytest.raises(ValidationError):
         schema.load(only_scheme)
 
 
 def test_identifier_required_empty_value():
-    schema = IdentifierSchema(allowed_schemes=[("dummy", validate_other)])
+    schema = IdentifierSchema(allowed_schemes=dummy_allowed_schemes)
     empty_identifier = {"identifier": "", "scheme": "orcid"}
     with pytest.raises(ValidationError):
         schema.load(empty_identifier)
@@ -93,7 +93,10 @@ def test_identifier_required_empty_value():
 
 
 def test_given_and_allowed_scheme_valid_value():  # 1
-    schema = IdentifierSchema(allowed_schemes=["doi"])
+    allowed_schemes = {
+        "doi": {"label": "DOI", "validator": idutils.is_doi}
+    }
+    schema = IdentifierSchema(allowed_schemes=allowed_schemes)
     valid_doi = {
         "scheme": "doi",
         "identifier": "10.12345/foo.bar"
@@ -103,7 +106,10 @@ def test_given_and_allowed_scheme_valid_value():  # 1
 
 
 def test_given_and_allowed_scheme_invalid_value():  # 1
-    schema = IdentifierSchema(allowed_schemes=["doi"])
+    allowed_schemes = {
+        "doi": {"label": "DOI", "validator": idutils.is_doi}
+    }
+    schema = IdentifierSchema(allowed_schemes=allowed_schemes)
     invalid_doi = {
         "scheme": "doi",
         "identifier": "12345"
@@ -113,7 +119,10 @@ def test_given_and_allowed_scheme_invalid_value():  # 1
 
 
 def test_given_and_not_allowed_scheme_valid_value():  # 2
-    schema = IdentifierSchema(allowed_schemes=[("other", validate_other)])
+    allowed_schemes = {
+        "other": {"label": "Other", "validator": validate_other}
+    }
+    schema = IdentifierSchema(allowed_schemes=allowed_schemes)
     valid_doi = {
         "scheme": "doi",
         "identifier": "10.12345/foo.bar"
@@ -129,7 +138,10 @@ def test_given_and_allowed_empty_scheme_valid_value():  # 3 and 7
 
 
 def test_given_custom_and_allowed_scheme_valid_value():  # 4
-    schema = IdentifierSchema(allowed_schemes=[("other", validate_other)])
+    allowed_schemes = {
+        "other": {"label": "Other", "validator": validate_other}
+    }
+    schema = IdentifierSchema(allowed_schemes=allowed_schemes)
     valid_other = {
         "scheme": "Other",  # to check the normalized lowercase
         "identifier": "12345"
@@ -140,7 +152,10 @@ def test_given_custom_and_allowed_scheme_valid_value():  # 4
 
 
 def test_given_custom_and_allowed_scheme_invalid_value():  # 4
-    schema = IdentifierSchema(allowed_schemes=[("other", validate_other)])
+    allowed_schemes = {
+        "other": {"label": "Other", "validator": validate_other}
+    }
+    schema = IdentifierSchema(allowed_schemes=allowed_schemes)
     invalid_other = {
         "scheme": "other",
         "identifier": "12345abc"
@@ -151,7 +166,10 @@ def test_given_custom_and_allowed_scheme_invalid_value():  # 4
 
 
 def test_detected_and_allowed_scheme_valid_value():  # 5
-    schema = IdentifierSchema(allowed_schemes=["doi"])
+    allowed_schemes = {
+        "doi": {"label": "DOI", "validator": idutils.is_doi}
+    }
+    schema = IdentifierSchema(allowed_schemes=allowed_schemes)
     valid_doi = {
         "identifier": "10.12345/foo.bar"
     }
@@ -162,7 +180,10 @@ def test_detected_and_allowed_scheme_valid_value():  # 5
 
 
 def test_detected_and_not_allowed_scheme_valid_value():  # 6
-    schema = IdentifierSchema(allowed_schemes=[("other", validate_other)])
+    allowed_schemes = {
+        "other": {"label": "Other", "validator": validate_other}
+    }
+    schema = IdentifierSchema(allowed_schemes=allowed_schemes)
     valid_doi = {
         "identifier": "10.12345/foo.bar"
     }
@@ -172,7 +193,11 @@ def test_detected_and_not_allowed_scheme_valid_value():  # 6
 
 
 def test_detected_and_allowed_scheme_respect_detection_order():  # 8
-    schema = IdentifierSchema(allowed_schemes=["orcid", "isni"])
+    allowed_schemes = {
+        "orcid": {"label": "ORCiD", "validator": idutils.is_orcid},
+        "isni": {"label": "ISNI", "validator": idutils.is_isni}
+    }
+    schema = IdentifierSchema(allowed_schemes=allowed_schemes)
     valid_orcid = {
         "identifier": "0000-0001-6759-6273"
     }
@@ -183,7 +208,10 @@ def test_detected_and_allowed_scheme_respect_detection_order():  # 8
 
 
 def test_detected_and_allowed_scheme_second_detected():  # 8
-    schema = IdentifierSchema(allowed_schemes=["isni"])
+    allowed_schemes = {
+        "isni": {"label": "ISNI", "validator": idutils.is_isni}
+    }
+    schema = IdentifierSchema(allowed_schemes=allowed_schemes)
     valid_isni = {
         "identifier": "0000-0001-6759-6273"
     }
@@ -194,7 +222,10 @@ def test_detected_and_allowed_scheme_second_detected():  # 8
 
 
 def test_not_given_not_detected_scheme_for_identifier():  # 10
-    schema = IdentifierSchema(allowed_schemes=["isni"])
+    allowed_schemes = {
+        "isni": {"label": "ISNI", "validator": idutils.is_isni}
+    }
+    schema = IdentifierSchema(allowed_schemes=allowed_schemes)
     invalid_no_scheme = {
         "identifier": "00:11:22:33"
     }
