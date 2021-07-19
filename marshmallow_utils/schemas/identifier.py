@@ -26,9 +26,8 @@ class IdentifierSchema(Schema):
     def __init__(self, allowed_schemes, identifier_required=True, **kwargs):
         """Constructor.
 
-        :param allowed_schemes: a list of allowed schemes. Accepts a string
-            or a tuple. If IDUtils cannot validate it, it expects a tuple
-            with (scheme_name, validation_function).
+        :param allowed_schemes: a dictionary of allowed schemes. Each key must
+            contain a validator function and a scheme label.
         :param identifier_required: True when the identifier value is required.
         """
         self.identifier_required = identifier_required
@@ -38,26 +37,7 @@ class IdentifierSchema(Schema):
                     "allowed_schemes must be a list of string(s) " +
                     "and/or tuple(s)")
 
-        self.allowed_schemes = {}
-        for scheme in allowed_schemes:
-            # if it is a string it should be present in IDUtils
-            if isinstance(scheme, str):
-                try:
-                    scheme = scheme.lower()
-                    val_func = getattr(idutils, f"is_{scheme}")
-                    self.allowed_schemes[scheme] = val_func
-                except AttributeError:
-                    raise ValidationError(
-                        f"Validation function for scheme {scheme} not " +
-                        "found. Please provide one.")
-            # tuple, (scheme, validation_function)
-            elif isinstance(scheme, tuple):
-                self.allowed_schemes[scheme[0].lower()] = scheme[1]
-            else:
-                raise ValidationError(
-                    "allowed_schemes must be a list of string(s) " +
-                    "and/or tuple(s)")
-
+        self.allowed_schemes = allowed_schemes
         super().__init__(**kwargs)
 
     def _intersect_with_order(self, detected_schemes):
@@ -112,10 +92,13 @@ class IdentifierSchema(Schema):
 
         if identifier:
             # at this point, `scheme` is set or validation failed earlier
-            validation_function = self.allowed_schemes[scheme]
+            validation_function = self.allowed_schemes[scheme]["validator"]
             if not validation_function(identifier):
+                scheme_label = self.allowed_schemes[scheme].get(
+                    "label", scheme
+                )
                 raise ValidationError(
-                    f"Invalid value {identifier} for scheme {scheme}.",
+                    f"Invalid value {identifier} for scheme {scheme_label}.",
                     field_name="identifier"
                 )
 
