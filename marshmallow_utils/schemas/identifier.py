@@ -100,11 +100,14 @@ class IdentifierSchema(Schema):
         scheme = data.get("scheme")
 
         if self.identifier_required and not identifier:
-            raise ValidationError("Missing required identifier.")
+            raise ValidationError(
+                "Missing required identifier.", field_name="identifier"
+            )
 
         if identifier and not scheme:
             raise ValidationError(
-                f"Missing or invalid scheme for identifier {identifier}."
+                f"Missing or invalid scheme for identifier {identifier}.",
+                field_name="scheme"
             )
 
         if identifier:
@@ -112,7 +115,8 @@ class IdentifierSchema(Schema):
             validation_function = self.allowed_schemes[scheme]
             if not validation_function(identifier):
                 raise ValidationError(
-                    f"Invalid value {identifier} for scheme {scheme}."
+                    f"Invalid value {identifier} for scheme {scheme}.",
+                    field_name="identifier"
                 )
 
     @post_load
