@@ -30,8 +30,11 @@ dummy_allowed_schemes = {
 
 def test_identifier_required_no_value():
     schema = IdentifierSchema(allowed_schemes=dummy_allowed_schemes)
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as e:
         schema.load({})
+
+    errors = e.value.normalized_messages()
+    assert errors == {'identifier': ['Missing data for required field.']}
 
 
 def test_identifier_not_required_no_value():
@@ -46,15 +49,21 @@ def test_identifier_not_required_no_value():
 def test_identifier_required_only_scheme():
     schema = IdentifierSchema(allowed_schemes=dummy_allowed_schemes)
     only_scheme = {"scheme": "orcid"}
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as e:
         schema.load(only_scheme)
+
+    errors = e.value.normalized_messages()
+    assert errors == {'identifier': ['Missing data for required field.']}
 
 
 def test_identifier_required_empty_value():
     schema = IdentifierSchema(allowed_schemes=dummy_allowed_schemes)
     empty_identifier = {"identifier": "", "scheme": "orcid"}
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as e:
         schema.load(empty_identifier)
+
+    errors = e.value.normalized_messages()
+    assert errors == {'identifier': ['Missing data for required field.']}
 
 #
 # Test cases when identifier provided:
@@ -114,8 +123,11 @@ def test_given_and_allowed_scheme_invalid_value():  # 1
         "scheme": "doi",
         "identifier": "12345"
     }
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as e:
         schema.load(invalid_doi)
+
+    errors = e.value.normalized_messages()
+    assert errors == {'identifier': ['Invalid DOI identifier.']}
 
 
 def test_given_and_not_allowed_scheme_valid_value():  # 2
@@ -127,14 +139,13 @@ def test_given_and_not_allowed_scheme_valid_value():  # 2
         "scheme": "doi",
         "identifier": "10.12345/foo.bar"
     }
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as e:
         schema.load(valid_doi)
 
-
-def test_given_and_allowed_empty_scheme_valid_value():  # 3 and 7
-    # NOTE: does not allow the instantiation with emtpy allowed schemes
-    with pytest.raises(ValidationError):
-        IdentifierSchema(allowed_schemes=[])
+    errors = e.value.normalized_messages()
+    assert errors == {
+        'scheme': ['Invalid scheme for identifier 10.12345/foo.bar.']
+    }
 
 
 def test_given_custom_and_allowed_scheme_valid_value():  # 4
@@ -161,8 +172,11 @@ def test_given_custom_and_allowed_scheme_invalid_value():  # 4
         "identifier": "12345abc"
     }
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as e:
         schema.load(invalid_other)
+
+    errors = e.value.normalized_messages()
+    assert errors == {'identifier': ['Invalid Other identifier.']}
 
 
 def test_detected_and_allowed_scheme_valid_value():  # 5
@@ -188,13 +202,18 @@ def test_detected_and_not_allowed_scheme_valid_value():  # 6
         "identifier": "10.12345/foo.bar"
     }
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as e:
         schema.load(valid_doi)
+
+    errors = e.value.normalized_messages()
+    assert errors == {
+        'scheme': ['Invalid scheme for identifier 10.12345/foo.bar.']
+    }
 
 
 def test_detected_and_allowed_scheme_respect_detection_order():  # 8
     allowed_schemes = {
-        "orcid": {"label": "ORCiD", "validator": idutils.is_orcid},
+        "orcid": {"label": "ORCID", "validator": idutils.is_orcid},
         "isni": {"label": "ISNI", "validator": idutils.is_isni}
     }
     schema = IdentifierSchema(allowed_schemes=allowed_schemes)
@@ -230,5 +249,10 @@ def test_not_given_not_detected_scheme_for_identifier():  # 10
         "identifier": "00:11:22:33"
     }
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError) as e:
         schema.load(invalid_no_scheme)
+
+    errors = e.value.normalized_messages()
+    assert errors == {
+        'scheme': ['Invalid scheme for identifier 00:11:22:33.']
+    }

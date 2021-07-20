@@ -17,8 +17,12 @@ class IdentifierSet(List):
     It assumes the items of the list contain a *scheme* property.
     """
 
+    default_error_messages = {
+        "multiple_values": "Only one identifier per scheme is allowed.",
+    }
+
     def _validate(self, value):
         """Validates the list of identifiers."""
         schemes = [identifier["scheme"] for identifier in value]
         if not len(value) == len(set(schemes)):
-            raise ValidationError("Only one identifier per scheme is allowed.")
+            raise self.make_error(key="multiple_values")
