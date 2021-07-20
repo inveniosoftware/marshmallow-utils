@@ -20,7 +20,7 @@ from marshmallow_utils.schemas import IdentifierSchema
 
 class TestSchema(Schema):
     allowed_schemes = {
-        "orcid": {"label": "ORCiD", "validator": idutils.is_orcid},
+        "orcid": {"label": "ORCID", "validator": idutils.is_orcid},
         "doi": {"label": "DOI", "validator": idutils.is_doi}
     }
     identifiers = IdentifierSet(
@@ -45,37 +45,28 @@ def test_valid_identifiers():
 
 
 def test_invalid_duplicate_identifiers():
-    duplicate_identifiers = {
-        "identifiers": [{
-            "identifier": "10.5281/zenodo.9999999",
-            "scheme": "doi"
-            }, {
-            "identifier": "10.5281/zenodo.9999999",
-            "scheme": "doi"
-        }]
-    }
+    duplicate_identifiers = [
+        {
+            "identifiers": [{  # full duplication
+                "identifier": "10.5281/zenodo.9999999",
+                "scheme": "doi"
+                }, {
+                "identifier": "10.5281/zenodo.9999999",
+                "scheme": "doi"
+            }]
+        }, {
+            "identifiers": [{  # no scheme provided
+                "identifier": "10.5281/zenodo.9999999",
+                }, {
+                "identifier": "10.5281/zenodo.9999999",
+            }]
+        }
+    ]
 
-    with pytest.raises(ValidationError):
-        TestSchema().load(duplicate_identifiers)
-
-
-def test_invalid_duplicate_identifiers_no_scheme_provided():
-    duplicate_identifiers = {
-        "identifiers": [{
-            "identifier": "10.5281/zenodo.9999999",
-            }, {
-            "identifier": "10.5281/zenodo.9999999",
-        }]
-    }
-
-    with pytest.raises(ValidationError):
-        TestSchema().load(duplicate_identifiers)
-
-
-def test_invalid_empty_identifiers():
-    duplicate_identifiers = {
-        "identifiers": [{}]
-    }
-
-    with pytest.raises(ValidationError):
-        TestSchema().load(duplicate_identifiers)
+    for case in duplicate_identifiers:
+        with pytest.raises(ValidationError) as e:
+            TestSchema().load(case)
+        errors = e.value.normalized_messages()
+        assert errors == {
+            'identifiers': ['Only one identifier per scheme is allowed.']
+        }

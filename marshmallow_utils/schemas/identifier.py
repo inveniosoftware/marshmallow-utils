@@ -23,6 +23,12 @@ class IdentifierSchema(Schema):
     identifier = SanitizedUnicode()
     scheme = SanitizedUnicode()
 
+    error_messages = {
+        "invalid_identifier": "Invalid {scheme} identifier.",
+        "invalid_scheme": "Invalid scheme for identifier {identifier}.",
+        "required": "Missing data for required field.",
+    }
+
     def __init__(self, allowed_schemes, identifier_required=True, **kwargs):
         """Constructor.
 
@@ -31,12 +37,6 @@ class IdentifierSchema(Schema):
         :param identifier_required: True when the identifier value is required.
         """
         self.identifier_required = identifier_required
-
-        if not allowed_schemes:
-            raise ValidationError(
-                    "allowed_schemes must be a list of string(s) " +
-                    "and/or tuple(s)")
-
         self.allowed_schemes = allowed_schemes
         super().__init__(**kwargs)
 
@@ -81,12 +81,14 @@ class IdentifierSchema(Schema):
 
         if self.identifier_required and not identifier:
             raise ValidationError(
-                "Missing required identifier.", field_name="identifier"
+                self.error_messages["required"],
+                field_name="identifier"
             )
 
         if identifier and not scheme:
+            message = self.error_messages["invalid_scheme"]
             raise ValidationError(
-                f"Missing or invalid scheme for identifier {identifier}.",
+                message.format(identifier=identifier),
                 field_name="scheme"
             )
 
@@ -97,8 +99,9 @@ class IdentifierSchema(Schema):
                 scheme_label = self.allowed_schemes[scheme].get(
                     "label", scheme
                 )
+                message = self.error_messages["invalid_identifier"]
                 raise ValidationError(
-                    f"Invalid value {identifier} for scheme {scheme_label}.",
+                    message.format(scheme=scheme_label),
                     field_name="identifier"
                 )
 
