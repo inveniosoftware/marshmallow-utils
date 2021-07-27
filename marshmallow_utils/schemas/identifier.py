@@ -25,7 +25,7 @@ class IdentifierSchema(Schema):
 
     error_messages = {
         "invalid_identifier": "Invalid {scheme} identifier.",
-        "invalid_scheme": "Invalid scheme for identifier {identifier}.",
+        "invalid_scheme": "Invalid scheme.",
         "required": "Missing data for required field.",
     }
 
@@ -64,12 +64,12 @@ class IdentifierSchema(Schema):
             detected_schemes = [scheme.lower()]
 
         # check if given or any detected is allowed
-        data["scheme"] = self._intersect_with_order(detected_schemes)
+        detected_scheme = self._intersect_with_order(detected_schemes)
 
-        if not data["scheme"]:
+        if detected_scheme:
             # no match between detected and allowed
             # will fail at validation step
-            data.pop("scheme", None)
+            data["scheme"] = detected_scheme
 
         return data
 
@@ -79,31 +79,28 @@ class IdentifierSchema(Schema):
         identifier = data.get("identifier")
         scheme = data.get("scheme")
 
+        errors = dict()
+        if not scheme:
+            errors['scheme'] = self.error_messages["required"]
+        elif scheme not in self.allowed_schemes:
+            errors['scheme'] = self.error_messages[
+                "invalid_scheme"
+            ].format(scheme=scheme)
+
         if self.identifier_required and not identifier:
-            raise ValidationError(
-                self.error_messages["required"],
-                field_name="identifier"
-            )
+            errors['identifier'] = self.error_messages["required"]
 
-        if identifier and not scheme:
-            message = self.error_messages["invalid_scheme"]
-            raise ValidationError(
-                message.format(identifier=identifier),
-                field_name="scheme"
-            )
-
-        if identifier:
-            # at this point, `scheme` is set or validation failed earlier
+        if identifier and scheme and scheme in self.allowed_schemes:
             validation_function = self.allowed_schemes[scheme]["validator"]
             if not validation_function(identifier):
                 scheme_label = self.allowed_schemes[scheme].get(
                     "label", scheme
                 )
                 message = self.error_messages["invalid_identifier"]
-                raise ValidationError(
-                    message.format(scheme=scheme_label),
-                    field_name="identifier"
-                )
+                errors['identifier'] = message.format(scheme=scheme_label)
+
+        if errors:
+            raise ValidationError(errors)
 
     @post_load
     def normalize_identifier(self, data, **kwargs):
