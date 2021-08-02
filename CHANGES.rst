@@ -9,6 +9,10 @@
 Changes
 =======
 
+Version 0.5.2 (released 2021-08-02)
+
+- Add group of errors for proper handling of lists.
+
 Version 0.5.0 (released 2021-07-08)
 
 - Refactored to make it easier to use sanitization functions outside of
