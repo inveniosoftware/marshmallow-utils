@@ -38,18 +38,6 @@ def test_identifier_required_no_value():
                       'scheme': 'Missing data for required field.'}
 
 
-def test_identifier_not_required_no_value():
-    schema = IdentifierSchema(
-        allowed_schemes=dummy_allowed_schemes,
-        identifier_required=False
-    )
-    with pytest.raises(ValidationError) as e:
-        schema.load({})
-
-    errors = e.value.normalized_messages()
-    assert errors == {'scheme': 'Missing data for required field.'}
-
-
 def test_identifier_required_only_scheme():
     schema = IdentifierSchema(allowed_schemes=dummy_allowed_schemes)
     only_scheme = {"scheme": "dummy"}
@@ -68,6 +56,31 @@ def test_identifier_required_empty_value():
 
     errors = e.value.normalized_messages()
     assert errors == {'identifier': 'Missing data for required field.'}
+
+
+# required, only identifier -> detect schee
+
+
+def test_identifier_not_required_no_value():
+    schema = IdentifierSchema(
+        allowed_schemes=dummy_allowed_schemes,
+        identifier_required=False
+    )
+    assert schema.load({}) == {}
+
+
+def test_identifier_not_required_only_scheme():
+    schema = IdentifierSchema(
+        allowed_schemes=dummy_allowed_schemes,
+        identifier_required=False,
+    )
+    only_scheme = {"scheme": "dummy"}
+    with pytest.raises(ValidationError) as e:
+        schema.load(only_scheme)
+
+    errors = e.value.normalized_messages()
+    assert errors == {'identifier': 'Missing data for required field.'}
+
 
 #
 # Test cases when identifier provided:
@@ -156,7 +169,7 @@ def test_given_custom_and_allowed_scheme_valid_value():  # 4
     }
     schema = IdentifierSchema(allowed_schemes=allowed_schemes)
     valid_other = {
-        "scheme": "Other",  # to check the normalized lowercase
+        "scheme": "other",
         "identifier": "12345"
     }
 

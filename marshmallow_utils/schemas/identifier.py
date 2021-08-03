@@ -51,26 +51,24 @@ class IdentifierSchema(Schema):
 
     @pre_load(pass_many=False)
     def load_scheme(self, data, **kwargs):
-        """Loads the schema of the identifier."""
+        """Loads the scheme of the identifier."""
+        # If no identifier provided, proceed to validation
         identifier = data.get("identifier")
         if not identifier:
             return data
 
+        # If identifier and scheme is provided, proceed to validation.
         scheme = data.get("scheme")
-        if not scheme:
-            detected_schemes = idutils.detect_identifier_schemes(identifier)
-        else:
-            # if given, use it
-            detected_schemes = [scheme.lower()]
+        if scheme:
+            return data
 
-        # check if given or any detected is allowed
+        # If identifier but no scheme is provided, try to detect scheme
+        detected_schemes = idutils.detect_identifier_schemes(identifier)
+
+        # Select a valid scheme from the detected ones.
         detected_scheme = self._intersect_with_order(detected_schemes)
-
         if detected_scheme:
-            # no match between detected and allowed
-            # will fail at validation step
             data["scheme"] = detected_scheme
-
         return data
 
     @validates_schema
@@ -79,24 +77,29 @@ class IdentifierSchema(Schema):
         identifier = data.get("identifier")
         scheme = data.get("scheme")
 
+        # Bail if identifier is not required and identifier/scheme is not
+        # provided
+        if not self.identifier_required and not identifier and not scheme:
+            return
+
         errors = dict()
+
+        # Validate scheme
         if not scheme:
             errors['scheme'] = self.error_messages["required"]
         elif scheme not in self.allowed_schemes:
-            errors['scheme'] = self.error_messages[
-                "invalid_scheme"
-            ].format(scheme=scheme)
+            errors['scheme'] = self.error_messages["invalid_scheme"]
 
-        if self.identifier_required and not identifier:
+        # Validate identifier
+        if not identifier:
             errors['identifier'] = self.error_messages["required"]
-
-        if identifier and scheme and scheme in self.allowed_schemes:
-            validation_function = self.allowed_schemes[scheme]["validator"]
-            if not validation_function(identifier):
+        elif scheme and scheme in self.allowed_schemes:
+            validator = self.allowed_schemes[scheme]["validator"]
+            if not validator(identifier):
+                message = self.error_messages["invalid_identifier"]
                 scheme_label = self.allowed_schemes[scheme].get(
                     "label", scheme
                 )
-                message = self.error_messages["invalid_identifier"]
                 errors['identifier'] = message.format(scheme=scheme_label)
 
         if errors:
