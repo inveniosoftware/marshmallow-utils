@@ -9,6 +9,10 @@
 Changes
 =======
 
+Version 0.5.3 (released 2021-08-03)
+
+- Fix bug in IdentifierSchema when identifier was not required.
+
 Version 0.5.2 (released 2021-08-02)
 
 - Add group of errors for proper handling of lists.
