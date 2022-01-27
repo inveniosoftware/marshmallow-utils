@@ -19,3 +19,5 @@ recursive-include docs *.rst
 recursive-include docs *.txt
 recursive-include docs Makefile
 recursive-include tests *.py
+recursive-include marshmallow_utils *.po
+recursive-include marshmallow_utils *.pot
