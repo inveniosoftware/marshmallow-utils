@@ -211,4 +211,5 @@ def gettext_from_dict(catalog, locale, default_locale):
         catalog_key = catalog_langs[locale.language]
         return catalog[catalog_key]
     # If not, use default locale (must be defined it is defined)
-    return catalog.get(str(default_locale), None)
+    # "en" is set as fallback lng.
+    return catalog.get(str(default_locale), "en")
