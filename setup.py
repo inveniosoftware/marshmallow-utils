@@ -73,6 +73,11 @@ setup(
     zip_safe=False,
     include_package_data=True,
     platforms='any',
+        entry_points={
+        'invenio_i18n.translations': [
+            'marshmallow_utils = marshmallow_utils',
+        ],
+    },
     extras_require=extras_require,
     install_requires=install_requires,
     tests_require=tests_require,
