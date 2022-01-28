@@ -24,6 +24,10 @@ tests_require = [
     'pytest>=6.0',
 ]
 
+setup_requires = [
+    'Babel>=2.8,<3',
+]
+
 extras_require = {
     'docs': [
         'Sphinx>=4.2.0',
@@ -80,6 +84,7 @@ setup(
     },
     extras_require=extras_require,
     install_requires=install_requires,
+    setup_requires=setup_requires,
     tests_require=tests_require,
     classifiers=[
         'Intended Audience :: Developers',
