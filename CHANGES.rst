@@ -9,6 +9,12 @@
 Changes
 =======
 
+Version 0.5.4 (released 2022-01-28)
+
+- i18n: integrate translation flow
+- fields: gettext_from_dict fallback lng to en.
+- dep: bumped sphinx 4.2.0
+
 Version 0.5.3 (released 2021-08-03)
 
 - Fix bug in IdentifierSchema when identifier was not required.
