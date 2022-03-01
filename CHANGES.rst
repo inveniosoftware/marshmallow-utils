@@ -9,6 +9,10 @@
 Changes
 =======
 
+Version 0.5.5 (released 2022-03-01)
+
+- Updated German translations.
+
 Version 0.5.4 (released 2022-01-28)
 
 - i18n: integrate translation flow
