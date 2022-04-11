@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2020 CERN.
+# Copyright (C) 2020-2022 CERN.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
 
 r"""Extras and utilities for Marshmallow.
 
-Currently this library contains a couple of extra fields that helps with
+Currently, this library contains a couple of extra fields that helps with
 sanitizing data as shown in the following example:
 
 >>> from marshmallow_utils import fields
@@ -43,6 +43,6 @@ Fields:
   `arrow <https://pypi.org/project/arrow/>`_ for date parsing.
 """
 
-from .version import __version__
+__version__ = "0.5.5"
 
 __all__ = ('__version__', )
