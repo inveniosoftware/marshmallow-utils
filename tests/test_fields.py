@@ -55,8 +55,8 @@ def test_stripped_html():
         f = fields.StrippedHTML()
 
     assert ASchema().dump(
-        {'f': 'an <div><span>evil()</span> example</div>'}) == {
-        'f': 'an evil() example'}
+        {'f': 'an <div><p><span>evil()</span> example</p></div>'}) == {
+        'f': 'an \nevil() example'}
 
     # Ensure already escaped HTML is returned unescaped.
     assert ASchema().dump(
