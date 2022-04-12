@@ -206,7 +206,7 @@ def gettext_from_dict(catalog, locale, default_locale):
     }
     if isinstance(locale, str):
         locale = Locale.parse(locale)
-    if locale.language in catalog_langs:
+    if locale is not None and locale.language in catalog_langs:
         # If primary language match, use that
         catalog_key = catalog_langs[locale.language]
         return catalog[catalog_key]
