@@ -9,6 +9,12 @@
 Changes
 =======
 
+
+Version 0.5.6 (released 2022-05-13)
+
+- Move from setup.py to setup.cfg for purely declarative package definitions.
+- Fix bug with empty locale on babel gettext_from_dict.
+
 Version 0.5.5 (released 2022-03-01)
 
 - Updated German translations.
