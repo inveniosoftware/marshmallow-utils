@@ -21,9 +21,7 @@ class Links(fields.Field):
         """Dump the field by using the contextual schema."""
         factory = self.context.get("links_factory")
         namespace = self.context.get("links_namespace")
-        schema = (
-            factory.get_schema(namespace, self.context) if factory else None
-        )
+        schema = factory.get_schema(namespace, self.context) if factory else None
         if schema:
             return schema.dump(obj)
         else:
@@ -41,8 +39,9 @@ class Link(fields.Field):
     # NOTE: forces serialization
     _CHECK_ATTRIBUTE = False
 
-    def __init__(self, template=None, params=None, permission=None,
-                 when=always, **kwargs):
+    def __init__(
+        self, template=None, params=None, permission=None, when=always, **kwargs
+    ):
         """Constructor."""
         if isinstance(template, str):
             template = URITemplate(template)

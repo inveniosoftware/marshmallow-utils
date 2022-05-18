@@ -18,8 +18,7 @@ class EDTFValidator(Validator):
 
     default_message = "Please provide a valid date or interval."
 
-    def __init__(self, types=[Date, Interval], chronological_interval=True,
-                 error=None):
+    def __init__(self, types=[Date, Interval], chronological_interval=True, error=None):
         """Constructor.
 
         :params types: List of EDTFObject subclasses that you accept. Use
@@ -63,5 +62,5 @@ class EDTFDateString(fields.Str):
 
     def __init__(self, **kwargs):
         """Constructor."""
-        kwargs.setdefault('validate', EDTFValidator())
+        kwargs.setdefault("validate", EDTFValidator())
         super().__init__(**kwargs)

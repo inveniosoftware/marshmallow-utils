@@ -13,15 +13,15 @@ from marshmallow import ValidationError
 from marshmallow_utils.schemas import PolygonSchema
 
 
-@pytest.mark.parametrize("coordinates", [
-    ([[[2.38, 57.322], [23.194, -20.28], [-120.43, 19.15], [2.38, 57.322]]]),
-])
+@pytest.mark.parametrize(
+    "coordinates",
+    [
+        ([[[2.38, 57.322], [23.194, -20.28], [-120.43, 19.15], [2.38, 57.322]]]),
+    ],
+)
 def test_polygon(coordinates):
     print(coordinates)
-    valid_full = {
-        "type": "Polygon",
-        "coordinates": coordinates
-    }
+    valid_full = {"type": "Polygon", "coordinates": coordinates}
 
     loaded = PolygonSchema().load(valid_full)
     # NOTE: Since the schemas return the dict itself, the loaded object
@@ -29,16 +29,16 @@ def test_polygon(coordinates):
     assert valid_full == loaded == PolygonSchema().dump(loaded)
 
 
-@pytest.mark.parametrize("coordinates", [
-    ([2.38, 57.322, -120.43, 19.15]),
-    ([[2.38, 57.322], [-120.43, 19.15]]),
-    ([[[2.38, 57.322], [23.194, -20.28], [24.194, -19.2]]]),
-    ([[[2.38, 57.322], [2.38, 57.322]]]),
-    ([[[2.38, 57.322], [23.194, -20.28], [2.38, 57.322]]]),
-])
+@pytest.mark.parametrize(
+    "coordinates",
+    [
+        ([2.38, 57.322, -120.43, 19.15]),
+        ([[2.38, 57.322], [-120.43, 19.15]]),
+        ([[[2.38, 57.322], [23.194, -20.28], [24.194, -19.2]]]),
+        ([[[2.38, 57.322], [2.38, 57.322]]]),
+        ([[[2.38, 57.322], [23.194, -20.28], [2.38, 57.322]]]),
+    ],
+)
 def test_polygon_fail(coordinates):
-    invalid_point = {
-        "type": "Polygon",
-        "coordinates": coordinates
-    }
+    invalid_point = {"type": "Polygon", "coordinates": coordinates}
     pytest.raises(ValidationError, PolygonSchema().load, invalid_point)

@@ -11,8 +11,7 @@ Integrates idutils library to detect the scheme.
 """
 
 import idutils
-from marshmallow import Schema, ValidationError, post_load, pre_load, \
-    validates_schema
+from marshmallow import Schema, ValidationError, post_load, pre_load, validates_schema
 
 from ..fields import SanitizedUnicode
 
@@ -86,21 +85,19 @@ class IdentifierSchema(Schema):
 
         # Validate scheme
         if not scheme:
-            errors['scheme'] = self.error_messages["required"]
+            errors["scheme"] = self.error_messages["required"]
         elif scheme not in self.allowed_schemes:
-            errors['scheme'] = self.error_messages["invalid_scheme"]
+            errors["scheme"] = self.error_messages["invalid_scheme"]
 
         # Validate identifier
         if not identifier:
-            errors['identifier'] = self.error_messages["required"]
+            errors["identifier"] = self.error_messages["required"]
         elif scheme and scheme in self.allowed_schemes:
             validator = self.allowed_schemes[scheme]["validator"]
             if not validator(identifier):
                 message = self.error_messages["invalid_identifier"]
-                scheme_label = self.allowed_schemes[scheme].get(
-                    "label", scheme
-                )
-                errors['identifier'] = message.format(scheme=scheme_label)
+                scheme_label = self.allowed_schemes[scheme].get("label", scheme)
+                errors["identifier"] = message.format(scheme=scheme_label)
 
         if errors:
             raise ValidationError(errors)

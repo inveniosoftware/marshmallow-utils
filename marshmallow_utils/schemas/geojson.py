@@ -40,7 +40,7 @@ class PointSchema(Schema):
     """
 
     coordinates = List(Float, required=True, validate=GeometryValidator(Point))
-    type = Constant('Point')
+    type = Constant("Point")
 
 
 class MultiPointSchema(Schema):
@@ -50,8 +50,9 @@ class MultiPointSchema(Schema):
     """
 
     coordinates = List(
-        List(Float), required=True, validate=GeometryValidator(MultiPoint))
-    type = Constant('MultiPoint')
+        List(Float), required=True, validate=GeometryValidator(MultiPoint)
+    )
+    type = Constant("MultiPoint")
 
 
 class PolygonSchema(Schema):
@@ -61,8 +62,9 @@ class PolygonSchema(Schema):
     """
 
     coordinates = List(
-        List(List(Float)), required=True, validate=GeometryValidator(Polygon))
-    type = Constant('Polygon')
+        List(List(Float)), required=True, validate=GeometryValidator(Polygon)
+    )
+    type = Constant("Polygon")
 
 
 class GeometryObjectSchema(OneOfSchema):

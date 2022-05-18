@@ -17,11 +17,10 @@ class SanitizedUnicode(fields.String):
 
     UNWANTED_CHARACTERS = {
         # Zero-width space
-        u'\u200b',
+        "\u200b",
     }
 
     def _deserialize(self, value, attr, data, **kwargs):
         """Deserialize sanitized string value."""
-        value = super()._deserialize(
-            value, attr, data, **kwargs)
+        value = super()._deserialize(value, attr, data, **kwargs)
         return sanitize_unicode(value, unwanted_chars=self.UNWANTED_CHARACTERS)

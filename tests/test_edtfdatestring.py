@@ -18,17 +18,17 @@ class TestSchema(Schema):
 
 
 def test_dump():
-    assert TestSchema().dump({'date': '2020-09/2020-10'}) == {
-        'date': '2020-09/2020-10',
+    assert TestSchema().dump({"date": "2020-09/2020-10"}) == {
+        "date": "2020-09/2020-10",
     }
 
 
 def test_load():
     s = TestSchema()
-    assert s.load({'date': '2020-09/2020-10'})
+    assert s.load({"date": "2020-09/2020-10"})
     # Invalid
-    pytest.raises(ValidationError, s.load, {'date': '2020-09-21garbage'})
+    pytest.raises(ValidationError, s.load, {"date": "2020-09-21garbage"})
     # Not chronological
-    pytest.raises(ValidationError, s.load, {'date': '2021/2020'})
+    pytest.raises(ValidationError, s.load, {"date": "2021/2020"})
     # Not date or interval
-    pytest.raises(ValidationError, s.load, {'date': '2020-01-01T10:00:00'})
+    pytest.raises(ValidationError, s.load, {"date": "2020-01-01T10:00:00"})
