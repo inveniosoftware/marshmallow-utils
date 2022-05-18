@@ -38,6 +38,5 @@ class SanitizedHTML(fields.String):
 
     def _deserialize(self, value, attr, data, **kwargs):
         """Deserialize string by sanitizing HTML."""
-        value = super()._deserialize(
-            value, attr, data, **kwargs)
+        value = super()._deserialize(value, attr, data, **kwargs)
         return sanitize_html(value, tags=self.tags, attrs=self.attrs)

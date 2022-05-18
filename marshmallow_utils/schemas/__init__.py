@@ -7,14 +7,13 @@
 
 """Marshmallow schemas."""
 
-from .geojson import GeometryObjectSchema, MultiPointSchema, PointSchema, \
-    PolygonSchema
+from .geojson import GeometryObjectSchema, MultiPointSchema, PointSchema, PolygonSchema
 from .identifier import IdentifierSchema
 
 __all__ = (
-    'GeometryObjectSchema',
-    'IdentifierSchema',
-    'MultiPointSchema',
-    'PointSchema',
-    'PolygonSchema',
+    "GeometryObjectSchema",
+    "IdentifierSchema",
+    "MultiPointSchema",
+    "PointSchema",
+    "PolygonSchema",
 )

@@ -29,8 +29,7 @@ class ISODateString(fields.Date):
             return missing
 
         try:
-            return super()._serialize(
-                arrow.get(value).date(), attr, obj, **kwargs)
+            return super()._serialize(arrow.get(value).date(), attr, obj, **kwargs)
         except ParserError:
             return missing
 

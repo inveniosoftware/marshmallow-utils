@@ -21,6 +21,5 @@ class StrippedHTML(fields.String):
 
     def _serialize(self, value, attr, data, **kwargs):
         """Serialize string by stripping HTML entities."""
-        value = super()._serialize(
-            value, attr, data, **kwargs)
+        value = super()._serialize(value, attr, data, **kwargs)
         return strip_html(value)

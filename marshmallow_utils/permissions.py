@@ -28,8 +28,7 @@ class FieldPermissionsMixin:
         if field_permission_check:
             for k in self.field_load_permissions:
                 if k in data:
-                    action = self.field_load_permissions[k] or \
-                        self.default_load_action
+                    action = self.field_load_permissions[k] or self.default_load_action
                     # TODO (Alex): Maybe cache?
                     if action and not field_permission_check(action):
                         raise FieldPermissionError(k)
@@ -45,8 +44,7 @@ class FieldPermissionsMixin:
         if field_permission_check:
             for k in self.field_dump_permissions:
                 if k in data:
-                    action = self.field_dump_permissions[k] or \
-                        self.default_dump_action
+                    action = self.field_dump_permissions[k] or self.default_dump_action
                     if action and not field_permission_check(action):
                         del data[k]
         return data

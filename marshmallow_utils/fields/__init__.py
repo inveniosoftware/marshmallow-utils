@@ -7,8 +7,13 @@
 
 """Marshmallow fields."""
 
-from .babel import BabelGettextDictField, FormatDate, FormatDatetime, \
-    FormatEDTF, FormatTime
+from .babel import (
+    BabelGettextDictField,
+    FormatDate,
+    FormatDatetime,
+    FormatEDTF,
+    FormatTime,
+)
 from .contrib import Function, Method
 from .edtfdatestring import EDTFDateString
 from .generated import GenFunction, GenMethod
@@ -24,27 +29,27 @@ from .trimmed import TrimmedString
 from .tzdatetime import TZDateTime
 
 __all__ = (
-    'ALLOWED_HTML_ATTRS',
-    'ALLOWED_HTML_TAGS',
-    'BabelGettextDictField',
-    'EDTFDateString',
-    'FormatDate',
-    'FormatDatetime',
-    'FormatEDTF',
-    'FormatTime',
-    'Function',
-    'GenFunction',
-    'GenMethod',
-    'IdentifierSet',
-    'ISODateString',
-    'ISOLangString',
-    'Link',
-    'Links',
-    'Method',
-    'NestedAttribute',
-    'SanitizedHTML',
-    'SanitizedUnicode',
-    'StrippedHTML',
-    'TrimmedString',
-    'TZDateTime',
+    "ALLOWED_HTML_ATTRS",
+    "ALLOWED_HTML_TAGS",
+    "BabelGettextDictField",
+    "EDTFDateString",
+    "FormatDate",
+    "FormatDatetime",
+    "FormatEDTF",
+    "FormatTime",
+    "Function",
+    "GenFunction",
+    "GenMethod",
+    "IdentifierSet",
+    "ISODateString",
+    "ISOLangString",
+    "Link",
+    "Links",
+    "Method",
+    "NestedAttribute",
+    "SanitizedHTML",
+    "SanitizedUnicode",
+    "StrippedHTML",
+    "TrimmedString",
+    "TZDateTime",
 )

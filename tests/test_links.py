@@ -19,16 +19,19 @@ from marshmallow_utils.links import LinksFactory
 @pytest.fixture()
 def my_schema():
     """A test schema with."""
+
     class LinksSchema(Schema):
         self = fields.Link(
             template=URITemplate("/records{?params*}"),
-            params=lambda o: {"params": {
-                # type is expected to show in the query string as type=A&type=B
-                "type": ["A", "B"],
-                "sort": "newest",
-                "subtype": ["1"],
-                "size": 10,
-            }}
+            params=lambda o: {
+                "params": {
+                    # type is expected to show in the query string as type=A&type=B
+                    "type": ["A", "B"],
+                    "sort": "newest",
+                    "subtype": ["1"],
+                    "size": 10,
+                }
+            },
         )
         publish = fields.Link(
             template=URITemplate("/admin{/pid}"),
@@ -38,43 +41,35 @@ def my_schema():
         prev = fields.Link(
             template=URITemplate("/prev"),
             params=lambda o: {},
-            when=lambda o: o.get("allowed", True)
+            when=lambda o: o.get("allowed", True),
         )
 
     class MySchema(Schema):
         links = fields.Links()
 
-    factory = LinksFactory(
-        host="localhost",
-        config={"search": LinksSchema}
-    )
+    factory = LinksFactory(host="localhost", config={"search": LinksSchema})
 
-    return MySchema(
-        context={
-            "links_factory": factory,
-            "links_namespace": "search"
-
-        }
-    )
+    return MySchema(context={"links_factory": factory, "links_namespace": "search"})
 
 
 def test_links():
     """Test links factory with links field."""
+
     class EntitySchema(Schema):
         links = fields.Links()
 
     class ItemLinkSchema1(Schema):
         self = fields.Link(
             template=URITemplate("/1/{?pid}"),
-            params=lambda o: {'pid': o.get("pid")},
-            permission="read"
+            params=lambda o: {"pid": o.get("pid")},
+            permission="read",
         )
 
     class ItemLinkSchema2(Schema):
         self = fields.Link(
             template=URITemplate("/2/{?pid}"),
-            params=lambda o: {'pid': o.get("pid")},
-            permission="create"
+            params=lambda o: {"pid": o.get("pid")},
+            permission="create",
         )
 
     # Test: Create links during dumping
@@ -82,24 +77,22 @@ def test_links():
     context = {
         "links_factory": f,
         "links_namespace": "item",
-        "field_permission_check": lambda o: True  # allows anything
+        "field_permission_check": lambda o: True,  # allows anything
     }
-    assert (
-        {'links': {'self': 'https://localhost/1/?pid=1'}} ==
-        EntitySchema(context=context).dump({"pid": 1})
-    )
+    assert {"links": {"self": "https://localhost/1/?pid=1"}} == EntitySchema(
+        context=context
+    ).dump({"pid": 1})
 
     # Test: Create links with other config during dumping
     f = LinksFactory(host="localhost", config={"item": ItemLinkSchema2})
     context = {
         "links_factory": f,
         "links_namespace": "item",
-        "field_permission_check": lambda o: True  # allows anything
+        "field_permission_check": lambda o: True,  # allows anything
     }
-    assert (
-        {'links': {'self': 'https://localhost/2/?pid=1'}} ==
-        EntitySchema(context=context).dump({"pid": 1})
-    )
+    assert {"links": {"self": "https://localhost/2/?pid=1"}} == EntitySchema(
+        context=context
+    ).dump({"pid": 1})
 
 
 def test_params_expansion(my_schema):
@@ -107,8 +100,10 @@ def test_params_expansion(my_schema):
     # Test self link generation with expansion of the "type" query string
     # argument.
     self_link = my_schema.dump({})["links"]["self"]
-    assert self_link == \
-        "https://localhost/records?size=10&sort=newest&subtype=1&type=A&type=B"
+    assert (
+        self_link
+        == "https://localhost/records?size=10&sort=newest&subtype=1&type=A&type=B"
+    )
 
 
 def test_unknown_namespace(my_schema):
@@ -121,25 +116,25 @@ def test_permission(my_schema):
     """Test permission checks."""
     my_schema.context["field_permission_check"] = lambda a: a != "admin"
     links = my_schema.dump({})["links"]
-    assert 'self' in links
-    assert 'publish' not in links
+    assert "self" in links
+    assert "publish" not in links
 
     my_schema.context["field_permission_check"] = lambda a: True
     links = my_schema.dump({})["links"]
-    assert 'self' in links
-    assert 'publish' in links
+    assert "self" in links
+    assert "publish" in links
 
 
 def test_when(my_schema):
     links = my_schema.dump({"allowed": False})["links"]
-    assert 'self' in links
-    assert 'publish' in links
-    assert 'prev' not in links
+    assert "self" in links
+    assert "publish" in links
+    assert "prev" not in links
 
     links = my_schema.dump({"allowed": True})["links"]
-    assert 'self' in links
-    assert 'publish' in links
-    assert 'prev' in links
+    assert "self" in links
+    assert "publish" in links
+    assert "prev" in links
 
 
 def test_link_field_initialization():

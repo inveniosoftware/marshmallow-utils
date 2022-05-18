@@ -18,7 +18,7 @@ class TZDateTime(fields.DateTime):
     Defaults to setting the timezone to UTC, and using ISO format.
     """
 
-    def __init__(self, timezone=timezone.utc, format='iso', **kwargs):
+    def __init__(self, timezone=timezone.utc, format="iso", **kwargs):
         """Initialize the field."""
         super().__init__(format=format, **kwargs)
         self.timezone = timezone

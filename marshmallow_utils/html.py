@@ -15,47 +15,47 @@ from ftfy import fix_text
 #: Unwanted unicode characters
 UNWANTED_CHARS = {
     # Zero-width space
-    u'\u200b',
+    "\u200b",
 }
 
 
 #: Allowed tags used for html sanitizing by bleach.
 ALLOWED_HTML_TAGS = [
-    'a',
-    'abbr',
-    'acronym',
-    'b',
-    'blockquote',
-    'br',
-    'code',
-    'div',
-    'em',
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'i',
-    'li',
-    'ol',
-    'p',
-    'pre',
-    'span',
-    'strike',
-    'strong',
-    'sub',
-    'sup',
-    'u',
-    'ul',
+    "a",
+    "abbr",
+    "acronym",
+    "b",
+    "blockquote",
+    "br",
+    "code",
+    "div",
+    "em",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "i",
+    "li",
+    "ol",
+    "p",
+    "pre",
+    "span",
+    "strike",
+    "strong",
+    "sub",
+    "sup",
+    "u",
+    "ul",
 ]
 
 
 #: Allowed attributes used for html sanitizing by bleach.
 ALLOWED_HTML_ATTRS = {
-    '*': ['class'],
-    'a': ['href', 'title', 'name', 'class', 'rel'],
-    'abbr': ['title'],
-    'acronym': ['title'],
+    "*": ["class"],
+    "a": ["href", "title", "name", "class", "rel"],
+    "abbr": ["title"],
+    "acronym": ["title"],
 }
 
 
@@ -102,10 +102,12 @@ def sanitize_html(value, tags=None, attrs=None):
 def is_valid_xml_char(char):
     """Check if a character is valid based on the XML specification."""
     codepoint = ord(char)
-    return (0x20 <= codepoint <= 0xD7FF or
-            codepoint in (0x9, 0xA, 0xD) or
-            0xE000 <= codepoint <= 0xFFFD or
-            0x10000 <= codepoint <= 0x10FFFF)
+    return (
+        0x20 <= codepoint <= 0xD7FF
+        or codepoint in (0x9, 0xA, 0xD)
+        or 0xE000 <= codepoint <= 0xFFFD
+        or 0x10000 <= codepoint <= 0x10FFFF
+    )
 
 
 def sanitize_unicode(value, unwanted_chars=None):
@@ -113,11 +115,11 @@ def sanitize_unicode(value, unwanted_chars=None):
     value = fix_text(value.strip())
     # NOTE: This `join` might be ineffiecient... There's a solution with a
     # large compiled regex lying around, but needs a lot of tweaking.
-    value = ''.join(filter(is_valid_xml_char, value))
+    value = "".join(filter(is_valid_xml_char, value))
 
     if unwanted_chars is None:
         unwanted_chars = UNWANTED_CHARS
 
     for char in unwanted_chars:
-        value = value.replace(char, '')
+        value = value.replace(char, "")
     return value

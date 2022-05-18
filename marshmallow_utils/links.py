@@ -76,8 +76,7 @@ class LinksFactory:
         :param vars: The template variables for the expansion.
         """
         return self.base_url(
-            host=self.host,
-            rendered_path=template.expand(**self.preprocess_vars(vars))
+            host=self.host, rendered_path=template.expand(**self.preprocess_vars(vars))
         )
 
     @staticmethod

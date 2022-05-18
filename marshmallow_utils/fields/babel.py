@@ -24,7 +24,7 @@ class BabelFormatField(fields.String):
     The babel format field is used only for dumping.
     """
 
-    def __init__(self, format='medium', locale=LC_TIME, parse=True, **kwargs):
+    def __init__(self, format="medium", locale=LC_TIME, parse=True, **kwargs):
         """Constructor.
 
         :param format: The format to use (either ``short``, ``medium``,
@@ -35,7 +35,7 @@ class BabelFormatField(fields.String):
         self._format = format
         self._locale = locale
         self._parse = parse
-        kwargs.setdefault('dump_only', True)
+        kwargs.setdefault("dump_only", True)
         super().__init__(**kwargs)
 
     @property
@@ -64,8 +64,7 @@ class BabelFormatField(fields.String):
 
     def _serialize(self, value, attr, data, **kwargs):
         """Serialize the value."""
-        return super()._serialize(
-            self.format_value(value), attr, data, **kwargs)
+        return super()._serialize(self.format_value(value), attr, data, **kwargs)
 
 
 class FormatDate(BabelFormatField):
@@ -74,9 +73,7 @@ class FormatDate(BabelFormatField):
     def format_value(self, value):
         """Format an EDTF date."""
         return format_date(
-            self.parse(value, as_date=True),
-            format=self._format,
-            locale=self.locale
+            self.parse(value, as_date=True), format=self._format, locale=self.locale
         )
 
 
@@ -99,7 +96,7 @@ class FormatDatetime(BabelFormatField):
             self.parse(value, as_datetime=True),
             format=self._format,
             tzinfo=self.tzinfo,
-            locale=self.locale
+            locale=self.locale,
         )
 
 
@@ -112,7 +109,7 @@ class FormatTime(FormatDatetime):
             self.parse(value, as_time=True),
             format=self._format,
             tzinfo=self.tzinfo,
-            locale=self.locale
+            locale=self.locale,
         )
 
 
@@ -143,8 +140,8 @@ class BabelGettextDictField(fields.String):
     """
 
     default_error_messages = {
-        'invalid': 'Not a valid dictionary.',
-        'missing_locale': 'Translation not found for ',
+        "invalid": "Not a valid dictionary.",
+        "missing_locale": "Translation not found for ",
     }
 
     def __init__(self, locale, default_locale, **kwargs):
@@ -157,7 +154,7 @@ class BabelGettextDictField(fields.String):
         """
         self._locale = locale
         self._default_locale = default_locale
-        kwargs['dump_only'] = True
+        kwargs["dump_only"] = True
         super().__init__(**kwargs)
 
     @property
@@ -168,8 +165,11 @@ class BabelGettextDictField(fields.String):
     @property
     def default_locale(self):
         """Get the default locale to be used."""
-        return self._default_locale() \
-            if callable(self._default_locale) else self._default_locale
+        return (
+            self._default_locale()
+            if callable(self._default_locale)
+            else self._default_locale
+        )
 
     def _serialize(self, value, attr, obj, **kwargs):
         """Serialize the dict into a string.
@@ -180,11 +180,10 @@ class BabelGettextDictField(fields.String):
         if value is None:
             return None
         if not isinstance(value, dict):
-            raise self.make_error('invalid')
-        translated_str = gettext_from_dict(
-            value, self.locale, self.default_locale)
+            raise self.make_error("invalid")
+        translated_str = gettext_from_dict(value, self.locale, self.default_locale)
         if translated_str is None:
-            raise self.make_error('missing_locale')
+            raise self.make_error("missing_locale")
         return super()._serialize(translated_str, attr, obj, **kwargs)
 
 
@@ -201,9 +200,7 @@ def gettext_from_dict(catalog, locale, default_locale):
     # language itself might be found.
 
     # Extract language keys only.
-    catalog_langs = {
-        Locale.parse(l).language: l for (l, msg) in catalog.items()
-    }
+    catalog_langs = {Locale.parse(l).language: l for (l, msg) in catalog.items()}
     if isinstance(locale, str):
         locale = Locale.parse(locale)
     if locale is not None and locale.language in catalog_langs:
