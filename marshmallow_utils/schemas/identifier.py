@@ -23,6 +23,7 @@ class IdentifierSchema(Schema):
     scheme = SanitizedUnicode()
 
     error_messages = {
+        "unknown_scheme": "No valid scheme recognized for identifier.",
         "invalid_identifier": "Invalid {scheme} identifier.",
         "invalid_scheme": "Invalid scheme.",
         "required": "Missing data for required field.",
@@ -84,7 +85,9 @@ class IdentifierSchema(Schema):
         errors = dict()
 
         # Validate scheme
-        if not scheme:
+        if not scheme and identifier:
+            errors["scheme"] = self.error_messages["unknown_scheme"]
+        elif not scheme:
             errors["scheme"] = self.error_messages["required"]
         elif scheme not in self.allowed_schemes:
             errors["scheme"] = self.error_messages["invalid_scheme"]
