@@ -187,7 +187,7 @@ def test_detected_and_not_allowed_scheme_valid_value():  # 6
         schema.load(valid_doi)
 
     errors = e.value.normalized_messages()
-    assert errors == {"scheme": "Missing data for required field."}
+    assert errors == {"scheme": "No valid scheme recognized for identifier."}
 
 
 def test_detected_and_allowed_scheme_respect_detection_order():  # 8
@@ -222,4 +222,4 @@ def test_not_given_not_detected_scheme_for_identifier():  # 10
         schema.load(invalid_no_scheme)
 
     errors = e.value.normalized_messages()
-    assert errors == {"scheme": "Missing data for required field."}
+    assert errors == {"scheme": "No valid scheme recognized for identifier."}
