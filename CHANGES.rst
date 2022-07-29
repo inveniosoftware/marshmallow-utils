@@ -10,6 +10,10 @@ Changes
 =======
 
 
+Version 0.5.7 (released 2022-07-29)
+
+- Add validation message for unrecognised identifier schema
+
 Version 0.5.6 (released 2022-05-13)
 
 - Move from setup.py to setup.cfg for purely declarative package definitions.
