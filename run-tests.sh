@@ -14,6 +14,7 @@ set -o errexit
 set -o nounset
 
 python -m check_manifest
+python -m setup extract_messages --dry-run
 python -m sphinx.cmd.build -qnN docs docs/_build/html
 python -m pytest
 tests_exit_code=$?
