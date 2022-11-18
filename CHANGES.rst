@@ -10,6 +10,11 @@ Changes
 =======
 
 
+Version 0.5.8 (released 2022-11-18)
+
+- Add translations
+- Add translations workflow
+
 Version 0.5.7 (released 2022-07-29)
 
 - Add validation message for unrecognised identifier schema
