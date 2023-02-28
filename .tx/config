@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2019 CERN.
-# Copyright (C) 2022 Graz University of Technology.
+# Copyright (C) 2022-2023 Graz University of Technology.
 #
 # Invenio-RDM-Records is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
@@ -23,9 +23,9 @@
 #    $ tx pull -a
 
 [main]
-host = https://www.transifex.com
+host = https://app.transifex.com
 
-[invenio.marshmallow-utils-messages]
+[o:inveniosoftware:p:invenio:r:marshmallow-utils-messages]
 file_filter = marshmallow_utils/translations/<lang>/LC_MESSAGES/messages.po
 source_file = marshmallow_utils/translations/messages.pot
 source_lang = en
