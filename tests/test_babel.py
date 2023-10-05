@@ -46,8 +46,8 @@ class MySchema(Schema):
 def test_format_edtf():
     """Test EDTF formatting."""
     assert MySchema().dump({"edtf": "2020-09/2020-10"}) == {
-        "short": "9/2020 – 10/2020",
-        "long": "September – October 2020",
+        "short": "9/2020\u2009–\u200910/2020",
+        "long": "September\u2009–\u2009October 2020",
     }
 
 
