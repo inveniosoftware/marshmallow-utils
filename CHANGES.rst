@@ -10,6 +10,10 @@ Changes
 =======
 
 
+Version 0.6.0 (released 2023-10-11)
+
+- permission filters: add caching to improve performance
+
 Version 0.5.8 (released 2022-11-18)
 
 - Add translations
