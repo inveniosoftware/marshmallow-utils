@@ -7,7 +7,8 @@
 
 """Extended Date(/Time) Format Level 0 date string field."""
 
-from edtf import Date, Interval, parse_edtf
+from babel_edtf import parse_edtf
+from edtf import Date, Interval
 from edtf.parser.grammar import ParseException
 from marshmallow import ValidationError, fields
 from marshmallow.validate import Validator
