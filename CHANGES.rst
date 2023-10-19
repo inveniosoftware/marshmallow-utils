@@ -10,6 +10,10 @@ Changes
 =======
 
 
+Version 0.6.1 (released 2023-10-19)
+
+- chore: import parse from babel-edtf
+
 Version 0.6.0 (released 2023-10-11)
 
 - permission filters: add caching to improve performance
