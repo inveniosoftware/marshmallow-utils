@@ -27,6 +27,7 @@ from .sanitizedunicode import SanitizedUnicode
 from .strippedhtml import StrippedHTML
 from .trimmed import TrimmedString
 from .tzdatetime import TZDateTime
+from .url import URL
 
 __all__ = (
     "ALLOWED_HTML_ATTRS",
@@ -52,4 +53,5 @@ __all__ = (
     "StrippedHTML",
     "TrimmedString",
     "TZDateTime",
+    "URL",
 )
