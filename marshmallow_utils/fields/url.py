@@ -37,7 +37,10 @@ class URLValidator(Validator):
     """
 
     class RegexMemoizer:
+        """RegexMemoizer for URLValidator."""
+
         def __init__(self):
+            """Constructor."""
             self._memoized = {}
 
         def _regex_generator(
@@ -97,6 +100,7 @@ class URLValidator(Validator):
         def __call__(
             self, relative: bool, absolute: bool, require_tld: bool
         ) -> typing.Pattern:
+            """Generate, memoize and return validation regex."""
             key = (relative, absolute, require_tld)
             if key not in self._memoized:
                 self._memoized[key] = self._regex_generator(
@@ -119,6 +123,16 @@ class URLValidator(Validator):
         require_tld: bool = True,
         error: str | None = None,
     ):
+        """Constructor.
+
+        :param relative: Whether to allow relative URLs.
+        :param absolute: Whether to allow absolute URLs.
+        :param error: Error message to raise in case of a validation error.
+            Can be interpolated with `{input}`.
+        :param schemes: Valid schemes. By default, ``http``, ``https``,
+            ``ftp``, and ``ftps`` are allowed.
+        :param require_tld: Whether to reject non-FQDN hostnames.
+        """
         if not relative and not absolute:
             raise ValueError(
                 "URL validation cannot set both relative and absolute to False."
@@ -136,6 +150,10 @@ class URLValidator(Validator):
         return self.error.format(input=value)
 
     def __call__(self, value: str) -> str:
+        """Run the validation.
+
+        :param value: URL string to be validated.
+        """
         message = self._format_error(value)
         if not value:
             raise ValidationError(message)
@@ -177,6 +195,15 @@ class URL(String):
         require_tld: bool = True,
         **kwargs,
     ):
+        """Constructor.
+
+        :param default: Default value for the field if the attribute is not set.
+        :param relative: Whether to allow relative URLs.
+        :param require_tld: Whether to reject non-FQDN hostnames.
+        :param schemes: Valid schemes. By default, ``http``, ``https``,
+            ``ftp``, and ``ftps`` are allowed.
+        :param kwargs: The same keyword arguments that :class:`String` receives.
+        """
         super().__init__(**kwargs)
 
         self.relative = relative
