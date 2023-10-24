@@ -50,7 +50,7 @@ class URLValidator(Validator):
                 # a normal domain name, expressed in [A-Z0-9] chars with hyphens allowed only in the middle
                 # note that the regex will be compiled with IGNORECASE, so these are upper and lowercase chars
                 (
-                    r"(?:[A-Z0-9](?!.*[-_]{2})(?:[A-Z0-9-_]{0,61}[A-Z0-9])?\.)+"
+                    r"(?:[A-Z0-9](?!.*(-_|_-))(?:[A-Z0-9-_]{0,61}[A-Z0-9])?\.)+"
                     r"(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)"
                 ),
                 # or the special string 'localhost'
