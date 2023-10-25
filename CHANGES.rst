@@ -9,7 +9,7 @@
 Changes
 =======
 
-Version 0.7.0 (released 2023-10-23)
+Version 0.7.1 (released 2023-10-23)
 
 - fields: Add custom URL field with custom validator allowing `_` in url domains
 

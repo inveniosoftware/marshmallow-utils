@@ -1,4 +1,4 @@
-`# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 # Copyright (C) 2020-2022 CERN.
 #
@@ -43,6 +43,6 @@ Fields:
   `arrow <https://pypi.org/project/arrow/>`_ for date parsing.
 """
 
-__version__ = "0.7.0"
+__version__ = "0.7.1"
 
 __all__ = ("__version__",)
