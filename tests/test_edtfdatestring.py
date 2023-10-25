@@ -21,14 +21,21 @@ def test_dump():
     assert TestSchema().dump({"date": "2020-09/2020-10"}) == {
         "date": "2020-09/2020-10",
     }
+    # dump datetime
+    assert TestSchema().dump({"date": "2020-01-01T10:00:00"}) == {
+        "date": "2020-01-01T10:00:00",
+    }
 
 
 def test_load():
     s = TestSchema()
     assert s.load({"date": "2020-09/2020-10"})
+    assert s.load({"date": "2020-01-01T10:00:00"})
     # Invalid
     pytest.raises(ValidationError, s.load, {"date": "2020-09-21garbage"})
     # Not chronological
     pytest.raises(ValidationError, s.load, {"date": "2021/2020"})
-    # Not date or interval
-    pytest.raises(ValidationError, s.load, {"date": "2020-01-01T10:00:00"})
+    # Invalid interval
+    pytest.raises(
+        ValidationError, s.load, {"date": "2020-01-01T10:00:00/2020-02-01T10:00:00"}
+    )

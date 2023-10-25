@@ -8,7 +8,7 @@
 """Extended Date(/Time) Format Level 0 date string field."""
 
 from babel_edtf import parse_edtf
-from edtf import Date, Interval
+from edtf import Date, DateAndTime, Interval
 from edtf.parser.grammar import ParseException
 from marshmallow import ValidationError, fields
 from marshmallow.validate import Validator
@@ -19,7 +19,12 @@ class EDTFValidator(Validator):
 
     default_message = "Please provide a valid date or interval."
 
-    def __init__(self, types=[Date, Interval], chronological_interval=True, error=None):
+    def __init__(
+        self,
+        types=[Date, DateAndTime, Interval],
+        chronological_interval=True,
+        error=None,
+    ):
         """Constructor.
 
         :params types: List of EDTFObject subclasses that you accept. Use
