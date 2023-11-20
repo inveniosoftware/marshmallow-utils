@@ -15,7 +15,7 @@ from .babel import (
     FormatTime,
 )
 from .contrib import Function, Method
-from .edtfdatestring import EDTFDateString
+from .edtfdatestring import EDTFDateString, EDTFDateTimeString
 from .generated import GenFunction, GenMethod
 from .identifier import IdentifierSet
 from .isodate import ISODateString
@@ -34,6 +34,7 @@ __all__ = (
     "ALLOWED_HTML_TAGS",
     "BabelGettextDictField",
     "EDTFDateString",
+    "EDTFDateTimeString",
     "FormatDate",
     "FormatDatetime",
     "FormatEDTF",
