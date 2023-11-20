@@ -61,9 +61,22 @@ class EDTFValidator(Validator):
 
 class EDTFDateString(fields.Str):
     """
+    Extended Date Format Level 0 date string field.
+
+    A string field which is using the EDTF Validator.
+    """
+
+    def __init__(self, **kwargs):
+        """Constructor."""
+        kwargs.setdefault("validate", EDTFValidator(types=[Date, Interval]))
+        super().__init__(**kwargs)
+
+
+class EDTFDateTimeString(fields.Str):
+    """
     Extended Date(/Time) Format Level 0 date string field.
 
-    A string field which an using the EDTF Validator.
+    A string field which is using the EDTF Validator.
     """
 
     def __init__(self, **kwargs):
