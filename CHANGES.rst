@@ -9,6 +9,11 @@
 Changes
 =======
 
+Version 0.8.1 (released 2023-11-29)
+
+- html: allow table tags
+- edtf: split date and datetime fields
+
 Version 0.8.0 (released 2023-10-25)
 
 - edtf: allow datetime value
