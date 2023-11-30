@@ -57,8 +57,7 @@ ALLOWED_HTML_TAGS = [
 
 #: Allowed attributes used for html sanitizing by bleach.
 ALLOWED_HTML_ATTRS = {
-    "*": ["class"],
-    "a": ["href", "title", "name", "class", "rel"],
+    "a": ["href", "title", "name", "target", "rel"],
     "abbr": ["title"],
     "acronym": ["title"],
 }
