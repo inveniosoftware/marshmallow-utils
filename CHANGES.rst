@@ -9,6 +9,10 @@
 Changes
 =======
 
+Version 0.8.2 (released 2023-12-11)
+
+- html: remove "class" from allowed html attributes
+
 Version 0.8.1 (released 2023-11-29)
 
 - html: allow table tags
