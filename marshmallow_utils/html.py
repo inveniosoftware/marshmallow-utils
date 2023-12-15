@@ -10,6 +10,7 @@
 import html
 
 import bleach
+from bleach.css_sanitizer import CSSSanitizer
 from ftfy import fix_text
 
 #: Unwanted unicode characters
@@ -28,6 +29,8 @@ ALLOWED_HTML_TAGS = [
     "blockquote",
     "br",
     "code",
+    "col",
+    "colgroup",
     "div",
     "table",
     "tbody",
@@ -45,6 +48,7 @@ ALLOWED_HTML_TAGS = [
     "ol",
     "p",
     "pre",
+    "s",
     "span",
     "strike",
     "strong",
@@ -60,7 +64,21 @@ ALLOWED_HTML_ATTRS = {
     "a": ["href", "title", "name", "target", "rel"],
     "abbr": ["title"],
     "acronym": ["title"],
+    "col": ["style"],
+    "table": ["style", "border"],
+    "td": ["style"],
 }
+
+ALLOWED_CSS_STYLES = [
+    "border-width",
+    "border-collapse",
+    "border-spacing",
+    "height",
+    "margin-right",
+    "margin-left",
+    "padding",
+    "width",
+]
 
 
 def strip_html(value):
@@ -71,7 +89,7 @@ def strip_html(value):
     return html.unescape(value)
 
 
-def sanitize_html(value, tags=None, attrs=None):
+def sanitize_html(value, tags=None, attrs=None, css_styles=None):
     """Sanitizes HTML using the bleach library.
 
     The default list of allowed tags and attributes is defined by
@@ -95,10 +113,14 @@ def sanitize_html(value, tags=None, attrs=None):
     if attrs is None:
         attrs = ALLOWED_HTML_ATTRS
 
+    if css_styles is None:
+        css_styles = ALLOWED_CSS_STYLES
+
     return bleach.clean(
         value,
         tags=tags,
         attributes=attrs,
+        css_sanitizer=CSSSanitizer(css_styles),
         strip=True,
     ).strip()
 
