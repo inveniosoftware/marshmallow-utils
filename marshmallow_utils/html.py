@@ -62,6 +62,73 @@ ALLOWED_HTML_ATTRS = {
     "acronym": ["title"],
 }
 
+# Allowed tags used for mathml
+ALLOWED_MATHML_TAGS = [
+    "annotation",
+    "annotation-xml",
+    "math",
+    "merror",
+    "mfrac",
+    "mi",
+    "mmultiscripts",
+    "mn",
+    "mo",
+    "mover",
+    "mpadded",
+    "mphantom",
+    "mprescripts",
+    "mroot",
+    "mrow",
+    "ms",
+    "mspace",
+    "msqrt",
+    "mstyle",
+    "msub",
+    "msubsup",
+    "msup",
+    "mtable",
+    "mtd",
+    "mtext",
+    "mtr",
+    "munder",
+    "munderover",
+    "semantics",
+]
+
+# Allowed attributes used for mathml
+ALLOWED_MATHML_ATTRS = {
+    "*": ["dir", "displaystyle", "mathvariant", "scriptlevel"],
+    "annotation": ["encoding"],
+    "annotation-xml": ["encoding"],
+    "math": ["display"],
+    "mfrac": ["linethickness"],
+    "mo": [
+        "fence",
+        "largeop",
+        "lspace",
+        "maxsize",
+        "minsize",
+        "movablelimits",
+        "rspace",
+        "separator",
+        "stretchy",
+        "symmetric",
+    ],
+    "mover": ["accent"],
+    "mpadded": ["depth", "height", "lspace", "voffset", "width"],
+    "ms": ["lquote", "rquote"],
+    "mspace": ["depth", "height", "width"],
+    "mtd": ["columnspan", "rowspan"],
+    "munder": ["accentunder"],
+    "munderover": ["accent", "accentunder"],
+}
+
+# Concatenate MathML tags to HTML tags
+ALLOWED_HTML_TAGS += ALLOWED_MATHML_TAGS
+
+# Concatenate MathML attributes to HTML attributes
+ALLOWED_HTML_ATTRS.update(ALLOWED_MATHML_ATTRS)
+
 
 def strip_html(value):
     """Strip all HTML from text and remove unwanted unicode characters."""
