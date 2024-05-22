@@ -1,5 +1,5 @@
 ..
-    Copyright (C) 2020-2021 CERN.
+    Copyright (C) 2020-2024 CERN.
     Copyright (C) 2020-2021 Northwestern University.
 
     Marshmallow-Utils is free software; you can redistribute it and/or
@@ -8,6 +8,10 @@
 
 Changes
 =======
+
+Version 0.9.0 (released 2024-05-22)
+
+- validators: implement LazyOneOf
 
 Version 0.8.2 (released 2023-12-11)
 

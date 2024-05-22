@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2020-2022 CERN.
+# Copyright (C) 2020-2024 CERN.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -43,6 +43,6 @@ Fields:
   `arrow <https://pypi.org/project/arrow/>`_ for date parsing.
 """
 
-__version__ = "0.8.2"
+__version__ = "0.9.0"
 
 __all__ = ("__version__",)
