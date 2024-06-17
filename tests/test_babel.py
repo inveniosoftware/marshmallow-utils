@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2024 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -118,4 +119,5 @@ def test_gettext_from_dict():
     assert gettext_from_dict({"en_US": "en_US"}, "en", "da") == "en_US"
     assert gettext_from_dict({"en": "en"}, "en_US", "da") == "en"
     assert gettext_from_dict({"en_GB": "en_GB"}, "en", "da") == "en_GB"
-    assert gettext_from_dict({"da": "da"}, "de", "da") == "da"
+    assert gettext_from_dict({"da": "aha"}, "de", "da") == "aha"
+    assert gettext_from_dict({"en": "ui", "da": "aha"}, "de", "sz") == "ui"

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2020 CERN.
+# Copyright (C) 2024 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -209,4 +210,7 @@ def gettext_from_dict(catalog, locale, default_locale):
         return catalog[catalog_key]
     # If not, use default locale (must be defined it is defined)
     # "en" is set as fallback lng.
-    return catalog.get(str(default_locale), "en")
+    try:
+        return catalog[str(default_locale)]
+    except KeyError:
+        return catalog["en"]
