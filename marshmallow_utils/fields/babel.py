@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016-2020 CERN.
+# Copyright (C) 2016-2024 CERN.
 # Copyright (C) 2024 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
 
 """Localized Extended Date(/Time) Format Level 0 date string field."""
-
-import calendar
-from datetime import date, datetime
 
 import arrow
 from babel import Locale
@@ -194,23 +191,21 @@ def gettext_from_dict(catalog, locale, default_locale):
     # negotiate e.g "en" when the available locales are "en_GB" and "da", even
     # though "en_GB" could be used.
     selected = negotiate_locale([str(locale)], catalog.keys())
-    if selected:
+    if selected and selected in catalog:
         return catalog[selected]
 
     # In situations where negotiate locale doesn't work, we check if the
     # language itself might be found.
 
     # Extract language keys only.
-    catalog_langs = {Locale.parse(l).language: l for (l, msg) in catalog.items()}
+    catalog_langs = {Locale.parse(l).language: l for l in catalog}
     if isinstance(locale, str):
         locale = Locale.parse(locale)
     if locale is not None and locale.language in catalog_langs:
         # If primary language match, use that
         catalog_key = catalog_langs[locale.language]
-        return catalog[catalog_key]
+        if catalog_key in catalog:
+            return catalog[catalog_key]
     # If not, use default locale (must be defined it is defined)
-    # "en" is set as fallback lng.
-    try:
-        return catalog[str(default_locale)]
-    except KeyError:
-        return catalog["en"]
+    # "en" is set as fallback language.
+    return catalog.get(str(default_locale)) or catalog.get("en")
