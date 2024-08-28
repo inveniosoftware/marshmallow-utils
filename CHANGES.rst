@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version v0.9.2 (released 2024-08-28)
+
+- babel: better handling for missing locales in catalog (#88)
+
 Version 0.9.1 (released 2024-06-24)
 
 - fix: translation should fallback to en translation
