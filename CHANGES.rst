@@ -10,7 +10,11 @@
 Changes
 =======
 
-Version v0.9.2 (released 2024-08-28)
+Version 0.9.3 (released 2024-09-27)
+
+- setup: upgrade babel-edtf to 1.2.0 and edtf to 5.0.0 and fix bug with dates and times with hour 23
+
+Version 0.9.2 (released 2024-08-28)
 
 - babel: better handling for missing locales in catalog (#88)
 
