@@ -52,6 +52,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -e .[$EXTRAS]
+          pip install importlib_metadata
           pip freeze
 
       - name: Run tests
