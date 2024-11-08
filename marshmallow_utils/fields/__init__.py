@@ -17,7 +17,7 @@ from .babel import (
 from .contrib import Function, Method
 from .edtfdatestring import EDTFDateString, EDTFDateTimeString
 from .generated import GenFunction, GenMethod
-from .identifier import IdentifierSet
+from .identifier import IdentifierSet, IdentifierValueSet
 from .isodate import ISODateString
 from .isolanguage import ISOLangString
 from .links import Link, Links
@@ -43,6 +43,7 @@ __all__ = (
     "GenFunction",
     "GenMethod",
     "IdentifierSet",
+    "IdentifierValueSet",
     "ISODateString",
     "ISOLangString",
     "Link",
