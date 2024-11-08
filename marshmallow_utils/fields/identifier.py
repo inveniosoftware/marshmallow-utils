@@ -23,5 +23,22 @@ class IdentifierSet(List):
     def _validate(self, value):
         """Validates the list of identifiers."""
         schemes = [identifier["scheme"] for identifier in value]
-        if not len(value) == len(set(schemes)):
+        if len(value) != len(set(schemes)):
+            raise self.make_error(key="multiple_values")
+
+
+class IdentifierValueSet(List):
+    """Identifier list with deduplication.
+
+        It assumes the items of the list contain a *scheme* property.
+        """
+
+    default_error_messages = {
+        "multiple_values": "Duplicated identifier entry is not allowed.",
+    }
+
+    def _validate(self, value):
+        """Validates the list of identifiers."""
+        identifiers = [(identifier["scheme"], identifier["identifier"]) for identifier in value]
+        if len(value) != len(set(identifiers)):
             raise self.make_error(key="multiple_values")
