@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version 0.10.0 (released 2024-11-11)
+
+- add IdentifierValueSet to require scheme and value to be unique
+
 Version v0.9.3 (released 2024-11-05)
 
 - setup: upgrade babel-edtf to 1.2.0 and edtf to 5.0.0 and fix bug with dates and times with hour 23

@@ -44,6 +44,6 @@ Fields:
   `arrow <https://pypi.org/project/arrow/>`_ for date parsing.
 """
 
-__version__ = "0.9.3"
+__version__ = "0.10.0"
 
 __all__ = ("__version__",)
