@@ -34,6 +34,8 @@ ALLOWED_HTML_TAGS = [
     "div",
     "table",
     "tbody",
+    "tfoot",
+    "thead",
     "td",
     "th",
     "tr",
@@ -59,14 +61,26 @@ ALLOWED_HTML_TAGS = [
 ]
 
 
+# NOTE: These attributes are taken from the OWASP XSS Safe Sinks section:
+# https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#safe-sinks
 #: Allowed attributes used for html sanitizing by bleach.
 ALLOWED_HTML_ATTRS = {
-    "a": ["href", "title", "name", "target", "rel"],
-    "abbr": ["title"],
-    "acronym": ["title"],
-    "col": ["style"],
-    "table": ["style", "border"],
-    "td": ["style"],
+    "a": ["href", "title", "name", "target", "rel", "rev", "alt"],
+    "div": ["dir", "lang"],
+    "span": ["dir", "lang"],
+    "p": ["dir", "lang"],
+    "abbr": ["title", "lang", "dir"],
+    "acronym": ["title", "lang", "dir"],
+    # Tables (we allow style)
+    "table": ["style"],
+    "tbody": ["style"],
+    "thead": ["style"],
+    "tfoot": ["style"],
+    "td": ["style", "colspan", "rowspan", "nowrap"],
+    "th": ["style", "colspan", "rowspan", "nowrap"],
+    "tr": ["style"],
+    "col": ["style", "span"],
+    "colgroup": ["style", "span"],
 }
 
 ALLOWED_CSS_STYLES = [
@@ -76,6 +90,8 @@ ALLOWED_CSS_STYLES = [
     "height",
     "margin-right",
     "margin-left",
+    "text-align",
+    "vertical-align",
     "padding",
     "width",
 ]
