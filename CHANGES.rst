@@ -1,5 +1,5 @@
 ..
-    Copyright (C) 2020-2024 CERN.
+    Copyright (C) 2020-2025 CERN.
     Copyright (C) 2020-2021 Northwestern University.
     Copyright (C) 2024 Graz University of Technology.
 
@@ -9,6 +9,11 @@
 
 Changes
 =======
+
+Version v0.11.1 (released 2025-04-03)
+
+- Various fixes for safely publishing RST for package long description.
+- ci: use reusable PyPI publish workflow
 
 Version v0.11.0 (released 2025-04-03)
 
