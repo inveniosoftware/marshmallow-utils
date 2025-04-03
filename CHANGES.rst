@@ -10,6 +10,11 @@
 Changes
 =======
 
+Version v0.11.0 (released 2025-04-03)
+
+- html: add all safe attributes from OWASP
+- html: updated allowed tags and styles
+
 Version 0.10.0 (released 2024-11-11)
 
 - add IdentifierValueSet to require scheme and value to be unique
