@@ -50,7 +50,7 @@ Version 0.8.0 (released 2023-10-25)
 
 Version 0.7.1 (released 2023-10-25)
 
-- fields: Add custom URL field with custom validator allowing `_` in url domains
+- fields: Add custom URL field with custom validator allowing ``_`` in url domains
 
 Version 0.6.1 (released 2023-10-19)
 
