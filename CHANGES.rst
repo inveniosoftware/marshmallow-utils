@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version v0.12.0 (released 2025-04-24)
+
+- fields: add level2 date string
+
 Version v0.11.1 (released 2025-04-03)
 
 - Various fixes for safely publishing RST for package long description.
