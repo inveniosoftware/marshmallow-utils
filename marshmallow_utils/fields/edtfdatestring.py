@@ -88,7 +88,7 @@ class EDTFDateTimeString(fields.Str):
 
 class EDTFLevel2DateString(fields.Str):
     """
-    Extended Date Format Level 1 date string field.
+    Extended Date Format Level 2 date string field.
 
     A string field which is using the EDTF Validator.
     """
