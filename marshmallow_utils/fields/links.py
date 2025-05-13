@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -19,8 +20,8 @@ class Links(fields.Field):
 
     def _serialize(self, value, attr, obj, *args, **kwargs):
         """Dump the field by using the contextual schema."""
-        factory = self.context.get("links_factory")
-        namespace = self.context.get("links_namespace")
+        factory = self.parent.context.get("links_factory")
+        namespace = self.parent.context.get("links_namespace")
         schema = factory.get_schema(namespace, self.context) if factory else None
         if schema:
             return schema.dump(obj)
@@ -53,8 +54,8 @@ class Link(fields.Field):
 
     def _serialize(self, value, attr, obj, *args, **kwargs):
         """Dump the link by using the context."""
-        factory = self.context.get("links_factory")
-        field_permission_check = self.context.get("field_permission_check")
+        factory = self.parent.context.get("links_factory")
+        field_permission_check = self.parent.context.get("field_permission_check")
 
         if field_permission_check and self.permission:
             if not field_permission_check(self.permission):

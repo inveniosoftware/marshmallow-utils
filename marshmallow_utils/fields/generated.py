@@ -1,27 +1,26 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2020 CERN.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
 
 """Generated field."""
 
-import warnings
 
-from marshmallow import __version_info__ as marshmallow_version
-from marshmallow import missing as missing_
+
+
+
 
 from .contrib import Function, Method
 
 
-class GeneratedValue(object):
+class GeneratedValue:
     """Sentinel value class forcing marshmallow missing field generation."""
 
-    pass
 
-
-class ForcedFieldDeserializeMixin(object):
+class ForcedFieldDeserializeMixin:
     """Mixin that forces deserialization of marshmallow fields."""
 
     # Overriding default deserializer since we need to deserialize an
@@ -38,10 +37,6 @@ class ForcedFieldDeserializeMixin(object):
 class GenFunction(ForcedFieldDeserializeMixin, Function):
     """Function field which is always deserialized."""
 
-    pass
-
 
 class GenMethod(ForcedFieldDeserializeMixin, Method):
     """Method field which is always deserialized."""
-
-    pass
