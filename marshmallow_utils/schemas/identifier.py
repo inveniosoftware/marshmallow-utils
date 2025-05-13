@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2021 CERN.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -49,7 +50,7 @@ class IdentifierSchema(Schema):
 
         return None
 
-    @pre_load(pass_many=False)
+    @pre_load(pass_collection=False)
     def load_scheme(self, data, **kwargs):
         """Loads the scheme of the identifier."""
         # If no identifier provided, proceed to validation
