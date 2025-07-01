@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2024 CERN.
-# Copyright (C) 2024 Graz University of Technology.
+# Copyright (C) 2024-2025 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -208,4 +208,11 @@ def gettext_from_dict(catalog, locale, default_locale):
             return catalog[catalog_key]
     # If not, use default locale (must be defined it is defined)
     # "en" is set as fallback language.
-    return catalog.get(str(default_locale)) or catalog.get("en")
+    out = catalog.get(str(default_locale)) or catalog.get("en")
+    if out:
+        return out
+
+    # if all other things didn't worked, we are here, the real and only last
+    # option, use the first element in the dictionary. this one here is only
+    # used to not break frontend
+    return list(catalog.values())[0]
