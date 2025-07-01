@@ -1,7 +1,7 @@
 ..
     Copyright (C) 2020-2025 CERN.
     Copyright (C) 2020-2021 Northwestern University.
-    Copyright (C) 2024 Graz University of Technology.
+    Copyright (C) 2024-2025 Graz University of Technology.
 
     Marshmallow-Utils is free software; you can redistribute it and/or
     modify it under the terms of the MIT License; see LICENSE file for more
@@ -9,6 +9,10 @@
 
 Changes
 =======
+
+Version v0.12.1 (released 2025-07-01)
+
+- fix: missing locale
 
 Version v0.12.0 (released 2025-04-24)
 
