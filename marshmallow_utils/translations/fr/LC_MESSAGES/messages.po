@@ -1,24 +1,28 @@
 # Translations template for marshmallow-utils.
-# Copyright (C) 2022 CERN
+# Copyright (C) 2024 CERN
 # This file is distributed under the same license as the marshmallow-utils
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+# 
+# Translators:
+# Keziah Okyere, 2024
 # 
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: marshmallow-utils 0.5.7\n"
+"Project-Id-Version: marshmallow-utils 0.9.1\n"
 "Report-Msgid-Bugs-To: info@inveniosoftware.org\n"
-"POT-Creation-Date: 2022-10-12 12:12+0000\n"
+"POT-Creation-Date: 2024-08-06 08:57+0000\n"
 "PO-Revision-Date: 2022-01-27 09:15+0000\n"
+"Last-Translator: Keziah Okyere, 2024\n"
 "Language-Team: French (https://app.transifex.com/inveniosoftware/teams/23537/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.10.3\n"
+"Generated-By: Babel 2.15.0\n"
 "Language: fr\n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #: marshmallow_utils/fields/isolanguage.py:24
 msgid "Language must be a lower-cased 3-letter ISO 639-3 string."
-msgstr ""
+msgstr "La langue doit être une chaîne ISO 639-3 à 3 lettres."

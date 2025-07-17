@@ -1,25 +1,25 @@
 # Translations template for marshmallow-utils.
-# Copyright (C) 2022 CERN
+# Copyright (C) 2024 CERN
 # This file is distributed under the same license as the marshmallow-utils
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
 # 
 # Translators:
-# chriz_uniba <christina.zeller@uni-bamberg.de>, 2022
+# c960a0736ea0fb7507bb1c3555e7d33f_88b575f <3cef15c38ce2563e884ec389656c9161_1006830>, 2022
 # 
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: marshmallow-utils 0.5.7\n"
+"Project-Id-Version: marshmallow-utils 0.9.1\n"
 "Report-Msgid-Bugs-To: info@inveniosoftware.org\n"
-"POT-Creation-Date: 2022-10-12 12:12+0000\n"
+"POT-Creation-Date: 2024-08-06 08:57+0000\n"
 "PO-Revision-Date: 2022-01-27 09:15+0000\n"
-"Last-Translator: chriz_uniba <christina.zeller@uni-bamberg.de>, 2022\n"
+"Last-Translator: c960a0736ea0fb7507bb1c3555e7d33f_88b575f <3cef15c38ce2563e884ec389656c9161_1006830>, 2022\n"
 "Language-Team: German (https://app.transifex.com/inveniosoftware/teams/23537/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.10.3\n"
+"Generated-By: Babel 2.15.0\n"
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
