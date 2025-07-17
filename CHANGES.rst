@@ -10,6 +10,10 @@
 Changes
 =======
 
+Version v0.13.0 (released 2025-07-17)
+
+- i18n: pulled translations
+
 Version v0.12.1 (released 2025-07-01)
 
 - fix: missing locale
