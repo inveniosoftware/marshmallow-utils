@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -10,7 +11,17 @@
 import pytest
 from marshmallow import Schema, fields
 
-from marshmallow_utils.permissions import FieldPermissionsMixin
+from marshmallow_utils.permissions import FieldPermissionsMixin, context_schema
+
+
+@pytest.fixture
+def field_permission_check():
+    """Fixture for field permission check."""
+
+    def _permission_check(*args, **kwargs):
+        return True
+
+    context_schema.set({"field_permission_check": _permission_check})
 
 
 class TestSchema(Schema, FieldPermissionsMixin):
