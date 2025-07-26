@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2023 CERN.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
 
 """Field-level permissions."""
 
+from warnings import warn
+
 from marshmallow import post_dump, pre_load
+
+from .context import context_schema
 
 
 class FieldPermissionError(Exception):
@@ -24,7 +29,15 @@ class FieldPermissionsMixin:
 
     @pre_load
     def _permissions_filter_load(self, data, **kwargs):
-        field_permission_check = self.context.get("field_permission_check")
+        if "field_permission_check" in self.context:
+            warn(
+                "using self.context for field_permission_check is deprecated, use marshmallow_utils.context:context_schema for it.",
+                DeprecationWarning,
+            )
+            field_permission_check = self.context.get("field_permission_check")
+        else:
+            field_permission_check = context_schema.get()["field_permission_check"]
+
         if field_permission_check:
             for k in self.field_load_permissions:
                 if k in data:
@@ -36,7 +49,15 @@ class FieldPermissionsMixin:
 
     @post_dump
     def _permissions_filter_dump(self, data, **kwargs):
-        field_permission_check = self.context.get("field_permission_check")
+        if "field_permission_check" in self.context:
+            warn(
+                "using self.context for field_permission_check is deprecated, use marshmallow_utils.context:context_schema for it.",
+                DeprecationWarning,
+            )
+            field_permission_check = self.context.get("field_permission_check")
+        else:
+            field_permission_check = context_schema.get()["field_permission_check"]
+
         if field_permission_check:
             # Initialize permissions cache to avoid to re-compute permissions that are repeated
             _permissions_cache = dict()

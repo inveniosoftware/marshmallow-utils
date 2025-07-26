@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2023 CERN.
+# Copyright (C) 2025-2026 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
 
 """Tests for marshmallow schema post dump permissions check."""
+
+import pytest
+
+from marshmallow_utils.context import context_schema
 
 
 def mocked_field_permission_check(action, identity=None, **kwargs):
@@ -34,9 +39,53 @@ def test_post_dump_permissions_removal(test_schema, test_object, test_object2):
     """Test that some fields are removed based on the permissions level access of the user."""
     mocked_field_permission_check.counter = 0  # We count the number of times the function is called because we are caching the return value in "_permissions_filter_dump" to increase the performance
 
-    test = test_schema(
-        context={"field_permission_check": mocked_field_permission_check}
-    ).dump(test_object)
+    with pytest.warns(DeprecationWarning):
+        test = test_schema(
+            context={"field_permission_check": mocked_field_permission_check}
+        ).dump(test_object)
+
+    assert "John" == test["name"]
+    assert "Doe" == test["last_name"]
+    assert 30 == test["age"]
+    assert not test.get("address")
+
+    assert (
+        mocked_field_permission_check.counter == 2
+    )  # since only 2 different permissions are defined in the attribute "field_dump_permissions" of the schema, we should only resolve 2 times the permissions
+
+    mocked_field_permission_check.counter = 0  # We reset the counter
+
+    with pytest.warns(DeprecationWarning):
+        test = test_schema(
+            context={
+                "field_permission_check": mocked_field_permission_check_allow_manage
+            }
+        ).dump([test_object, test_object2], many=True)
+
+    assert len(test) == 2
+
+    # Now it simulates that the permission check logic allows us to see all the fields
+    assert "John" == test[0]["name"]
+    assert "Doe" == test[0]["last_name"]
+    assert 30 == test[0]["age"]
+    assert "CERN" == test[0].get("address")
+
+    assert "Foo" == test[1]["name"]
+    assert "Bar" == test[1]["last_name"]
+    assert 40 == test[1]["age"]
+    assert "CERN" == test[1].get("address")
+
+    assert (
+        mocked_field_permission_check.counter == 4
+    )  # since only 2 different permissions are defined in the attribute "field_dump_permissions" of the schema, we should only resolve 4 times the permissions (2 permissions checks * 2 different records)
+
+
+def test_post_dump_permissions_removal_context(test_schema, test_object, test_object2):
+    """Test that some fields are removed based on the permissions level access of the user."""
+    mocked_field_permission_check.counter = 0  # We count the number of times the function is called because we are caching the return value in "_permissions_filter_dump" to increase the performance
+
+    context_schema.set({"field_permission_check": mocked_field_permission_check})
+    test = test_schema().dump(test_object)
 
     assert test["name"] == "John"
     assert test["last_name"] == "Doe"
@@ -49,9 +98,10 @@ def test_post_dump_permissions_removal(test_schema, test_object, test_object2):
 
     mocked_field_permission_check.counter = 0  # We reset the counter
 
-    test = test_schema(
-        context={"field_permission_check": mocked_field_permission_check_allow_manage}
-    ).dump([test_object, test_object2], many=True)
+    context_schema.set(
+        {"field_permission_check": mocked_field_permission_check_allow_manage}
+    )
+    test = test_schema().dump([test_object, test_object2], many=True)
 
     assert len(test) == 2
 
