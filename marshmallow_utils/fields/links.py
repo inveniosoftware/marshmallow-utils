@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2020 CERN.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
 
 """Link store and field for generating links."""
 
+from warnings import warn
+
 from marshmallow import fields, missing
 from uritemplate import URITemplate
+
+from ..context import context_schema
 
 
 class Links(fields.Field):
@@ -53,8 +58,23 @@ class Link(fields.Field):
 
     def _serialize(self, value, attr, obj, *args, **kwargs):
         """Dump the link by using the context."""
-        factory = self.context.get("links_factory")
-        field_permission_check = self.context.get("field_permission_check")
+        if "links_factory" in self.context:
+            warn(
+                "Using self.context for links_factory is deprecated. Use marshmallow_utils.context:context_schema for it.",
+                DeprecationWarning,
+            )
+            factory = self.context.get("links_factory")
+        else:
+            factory = context_schema.get()["links_factory"]
+
+        if "field_permission_check" in self.context:
+            warn(
+                "Using self.context for field_permission_check is deprecated. Use marshmallow_utils.context:context_schema for it.",
+                DeprecationWarning,
+            )
+            field_permission_check = self.context.get("field_permission_check")
+        else:
+            field_permission_check = context_schema.get()["field_permission_check"]
 
         if field_permission_check and self.permission:
             if not field_permission_check(self.permission):
