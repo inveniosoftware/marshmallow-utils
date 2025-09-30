@@ -2,6 +2,7 @@
 #
 # Copyright (C) 2020 CERN.
 # Copyright (C) 2020 Northwestern University.
+# Copyright (C) 2025 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -13,6 +14,7 @@ from marshmallow import Schema
 from uritemplate import URITemplate
 
 from marshmallow_utils import fields
+from marshmallow_utils.context import context_schema
 from marshmallow_utils.links import LinksFactory
 
 
@@ -52,7 +54,7 @@ def my_schema():
     return MySchema(context={"links_factory": factory, "links_namespace": "search"})
 
 
-def test_links():
+def test_links_context(field_permission_check):
     """Test links factory with links field."""
 
     class EntitySchema(Schema):
@@ -112,15 +114,30 @@ def test_unknown_namespace(my_schema):
     assert my_schema.dump({})["links"] == {}
 
 
-def test_permission(my_schema):
+def test_permission_context(my_schema):
     """Test permission checks."""
-    my_schema.context["field_permission_check"] = lambda a: a != "admin"
+    context_schema.set({"field_permission_check": lambda a: a != "admin"})
     links = my_schema.dump({})["links"]
     assert "self" in links
     assert "publish" not in links
 
-    my_schema.context["field_permission_check"] = lambda a: True
+    context_schema.set({"field_permission_check": lambda a: True})
     links = my_schema.dump({})["links"]
+    assert "self" in links
+    assert "publish" in links
+
+
+def test_permission(my_schema):
+    """Test permission checks."""
+    my_schema.context["field_permission_check"] = lambda a: a != "admin"
+    with pytest.warns(DeprecationWarning):
+        links = my_schema.dump({})["links"]
+    assert "self" in links
+    assert "publish" not in links
+
+    my_schema.context["field_permission_check"] = lambda a: True
+    with pytest.warns(DeprecationWarning):
+        links = my_schema.dump({})["links"]
     assert "self" in links
     assert "publish" in links
 
