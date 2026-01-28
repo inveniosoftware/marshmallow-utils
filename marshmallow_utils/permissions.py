@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2023 CERN.
-# Copyright (C) 2025 Graz University of Technology.
+# Copyright (C) 2025-2026 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -36,7 +36,10 @@ class FieldPermissionsMixin:
             )
             field_permission_check = self.context.get("field_permission_check")
         else:
-            field_permission_check = context_schema.get()["field_permission_check"]
+            try:
+                field_permission_check = context_schema.get()["field_permission_check"]
+            except LookupError:
+                field_permission_check = False
 
         if field_permission_check:
             for k in self.field_load_permissions:
@@ -56,7 +59,10 @@ class FieldPermissionsMixin:
             )
             field_permission_check = self.context.get("field_permission_check")
         else:
-            field_permission_check = context_schema.get()["field_permission_check"]
+            try:
+                field_permission_check = context_schema.get()["field_permission_check"]
+            except LookupError:
+                field_permission_check = False
 
         if field_permission_check:
             # Initialize permissions cache to avoid to re-compute permissions that are repeated
