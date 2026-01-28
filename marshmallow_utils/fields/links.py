@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2020 CERN.
-# Copyright (C) 2025 Graz University of Technology.
+# Copyright (C) 2025-2026 Graz University of Technology.
 #
 # Marshmallow-Utils is free software; you can redistribute it and/or modify
 # it under the terms of the MIT License; see LICENSE file for more details.
@@ -74,7 +74,10 @@ class Link(fields.Field):
             )
             field_permission_check = self.context.get("field_permission_check")
         else:
-            field_permission_check = context_schema.get()["field_permission_check"]
+            try:
+                field_permission_check = context_schema.get()["field_permission_check"]
+            except LookupError:
+                field_permission_check = False
 
         if field_permission_check and self.permission:
             if not field_permission_check(self.permission):
