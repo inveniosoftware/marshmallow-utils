@@ -11,6 +11,10 @@
 Changes
 =======
 
+Version v0.14.1 (released 2026-01-28)
+
+- fix: variable could not exist
+
 Version v0.14.0 (released 2026-01-27)
 
 - fix: remove unused code
