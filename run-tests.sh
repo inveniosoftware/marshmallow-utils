@@ -1,11 +1,7 @@
 #!/usr/bin/env sh
-# -*- coding: utf-8 -*-
-#
-# Copyright (C) 2020-2022 CERN.
-# Copyright (C) 2022-2023 Graz University of Technology.
-#
-# Marshmallow-Utils is free software; you can redistribute it and/or modify
-# it under the terms of the MIT License; see LICENSE file for more details.
+# SPDX-FileCopyrightText: 2020-2022 CERN.
+# SPDX-FileCopyrightText: 2022-2023 Graz University of Technology.
+# SPDX-License-Identifier: MIT
 
 # Quit on errors
 set -o errexit

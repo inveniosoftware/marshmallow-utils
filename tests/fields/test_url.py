@@ -1,10 +1,5 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright (C) 2016-2023 CERN.
-# Copyright 2021 Steven Loria and contributors
-#
-# Marshmallow-Utils is free software; you can redistribute it and/or modify
-# it under the terms of the MIT License; see LICENSE file for more details.
+# SPDX-FileCopyrightText: 2016-2023 CERN.
+# SPDX-License-Identifier: MIT
 
 """Tests for fields.url"""
 

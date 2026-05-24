@@ -1,10 +1,6 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright (C) 2016-2020 CERN.
-# Copyright (C) 2025 Graz University of Technology.
-#
-# Marshmallow-Utils is free software; you can redistribute it and/or modify
-# it under the terms of the MIT License; see LICENSE file for more details.
+# SPDX-FileCopyrightText: 2016-2020 CERN.
+# SPDX-FileCopyrightText: 2025 Graz University of Technology.
+# SPDX-License-Identifier: MIT
 
 """Generated field."""
 

@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright (C) 2016-2020 CERN.
-#
-# Marshmallow-Utils is free software; you can redistribute it and/or modify
-# it under the terms of the MIT License; see LICENSE file for more details.
+# SPDX-FileCopyrightText: 2016-2020 CERN.
+# SPDX-License-Identifier: MIT
 
 """Extended Date(/Time) Format Level 0 date string field."""
 
