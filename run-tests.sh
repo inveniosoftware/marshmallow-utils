@@ -9,8 +9,7 @@ set -o errexit
 # Quit on unbound symbols
 set -o nounset
 
-python -m check_manifest
-python -m setup extract_messages --output-file /dev/null
+pybabel extract -F pyproject.toml marshmallow_utils --output-file /dev/null
 python -m sphinx.cmd.build -qnN docs docs/_build/html
 python -m pytest
 tests_exit_code=$?
