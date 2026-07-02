@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2020-2025 CERN.
 # SPDX-FileCopyrightText: 2024-2026 Graz University of Technology.
 # SPDX-FileCopyrightText: 2025 KTH Royal Institute of Technology.
+# SPDX-FileCopyrightText: 2026 TU Wien.
 # SPDX-License-Identifier: MIT
 
 r"""Extras and utilities for Marshmallow.
@@ -41,6 +42,6 @@ Fields:
   `arrow <https://pypi.org/project/arrow/>`_ for date parsing.
 """
 
-__version__ = "0.15.0"
+__version__ = "0.15.1"
 
 __all__ = ("__version__",)
