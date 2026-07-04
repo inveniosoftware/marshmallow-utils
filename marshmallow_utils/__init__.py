@@ -38,8 +38,8 @@ Fields:
   `ftfy <https://pypi.org/project/ftfy/>`_ for fixing broken unicode text.
 - :py:class:`~fields.SanitizedHTML`: Integrates the
   `bleach <https://pypi.org/project/bleach/>`_ for HTML sanitization.
-- :py:class:`~fields.ISODateString`: Integrates the
-  `arrow <https://pypi.org/project/arrow/>`_ for date parsing.
+- :py:class:`~fields.ISODateString`: Integrates
+  `pendulum <https://pypi.org/project/pendulum/>`_ for date parsing.
 """
 
 __version__ = "0.15.1"

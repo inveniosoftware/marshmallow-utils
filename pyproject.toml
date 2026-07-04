@@ -21,7 +21,6 @@ classifiers = [
   "Development Status :: 5 - Production/Stable",
 ]
 dependencies = [
-  "arrow>=0.16.0",
   "babel>=2.8",
   "babel-edtf>=1.2.0",
   "bleach[css]>=5.0.0",
@@ -31,6 +30,7 @@ dependencies = [
   "idutils>=1.1.8",
   "marshmallow>=3.5.0,<4.0.0",
   "marshmallow-oneofschema>=2.1.0",
+  "pendulum>=3.0.0",
   "pycountry>=18.12.8",
   "uritemplate>=3.0.1",
   "werkzeug>=1.0.0",
