@@ -8,6 +8,14 @@
 Changes
 =======
 
+Version v0.14.2 (released 2026-07-27)
+
+- chore(setup): migrate from setuptools to hatchling
+- fix(ci): run tests on maint-*
+- i18n: pulled translations
+- chore(git-blame): ignore SPDX license header commit
+- chore(licenses): update license headers to use SPDX
+
 Version v0.14.1 (released 2026-01-28)
 
 - fix: variable could not exist
