@@ -8,6 +8,10 @@
 Changes
 =======
 
+Version v0.14.3 (released 2026-07-27)
+
+- fix(build): include mo files
+
 Version v0.14.2 (released 2026-07-27)
 
 - chore(setup): migrate from setuptools to hatchling
