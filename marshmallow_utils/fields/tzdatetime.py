@@ -6,7 +6,7 @@
 
 from datetime import datetime, timezone
 
-import arrow
+import pendulum
 from marshmallow import fields
 
 
@@ -26,6 +26,6 @@ class TZDateTime(fields.DateTime):
         if isinstance(value, datetime):
             value = value.replace(tzinfo=self.timezone)
         if isinstance(value, str):
-            value = arrow.get(value, tzinfo=self.timezone)
+            value = pendulum.parse(value, tzinfo=self.timezone)
 
         return super()._serialize(value, attr, obj, **kwargs)
