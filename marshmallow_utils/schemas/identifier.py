@@ -58,6 +58,12 @@ class IdentifierSchema(Schema):
         if scheme:
             return data
 
+        # We need the sanitized identifier, to make sure we detect the scheme correctly.
+        try:
+            identifier = self.fields["identifier"].deserialize(identifier)
+        except ValidationError:
+            return data
+
         # If identifier but no scheme is provided, try to detect scheme
         detected_schemes = idutils.detect_identifier_schemes(identifier)
 

@@ -6,7 +6,6 @@
 import idutils
 import pytest
 from marshmallow import ValidationError
-from marshmallow.fields import Str
 
 from marshmallow_utils.schemas import IdentifierSchema
 
@@ -92,8 +91,8 @@ def test_identifier_not_required_only_scheme():
 # 5- The scheme is NOT given -> is detected -> is allowed -> validate -> pass
 # 6- The scheme is NOT given -> is detected -> is NOT allowed -> fail
 # 7- The scheme is NOT given -> is detected -> allowed is empty -> fail
-# 8- The scheme is NOT given -> is detected (several) -> is allowed (one of them) -> pass  # noqa
-# 9- The scheme is NOT given -> is detected (several) -> is allowed (not the first) -> pass  # noqa
+# 8- The scheme is NOT given -> is detected (several) -> is allowed (one of them) -> pass
+# 9- The scheme is NOT given -> is detected (several) -> is allowed (not the first) -> pass
 # 10- The scheme is NOT given -> is NOT detected -> fail
 
 # | given  | detected |
@@ -106,9 +105,9 @@ def test_identifier_not_required_only_scheme():
 # |    -   |   [DOI]  |        [DOI]        | 10.12345/foo.bar |  pass  |
 # |    -   |   [DOI]  |       [Other]       | 10.12345/foo.bar |  fail  |
 # |    -   |   [DOI]  |         []          | 10.12345/foo.bar |  fail  |
-# |    -   |  [isni,  |       [isni]        |     0317-8471    |  pass  |  (scheme = isni)  # noqa
+# |    -   |  [isni,  |       [isni]        |     0317-8471    |  pass  |  (scheme = isni)
 # |        |  orcid]  |                     |                  |        |
-# |    -   |  [isni,  |       [orcid]       |     0317-8471    |  pass  |  (scheme = orcid)  # noqa
+# |    -   |  [isni,  |       [orcid]       |     0317-8471    |  pass  |  (scheme = orcid)
 # |        |  orcid]  |                     |                  |        |
 # |    -   |     -    |       [isni]        |    00:11:22:33   |  fail  |
 
@@ -172,6 +171,48 @@ def test_detected_and_allowed_scheme_valid_value():  # 5
 
     valid_doi["scheme"] = "doi"
     assert data == valid_doi
+
+
+@pytest.mark.parametrize(
+    "identifier",
+    [
+        " https://orcid.org/0000-0001-6759-6273 ",
+        " 0000-0001-6759-6273 ",
+        "\u200bhttps://orcid.org/0000-0001-6759-6273",
+    ],
+)
+def test_detected_scheme_uses_sanitized_identifier(identifier):
+    allowed_schemes = {"orcid": {"label": "ORCID", "validator": idutils.is_orcid}}
+    schema = IdentifierSchema(allowed_schemes=allowed_schemes)
+
+    assert schema.load({"identifier": identifier}) == {
+        "identifier": "0000-0001-6759-6273",
+        "scheme": "orcid",
+    }
+
+
+def test_given_scheme_uses_sanitized_identifier():
+    allowed_schemes = {"orcid": {"label": "ORCID", "validator": idutils.is_orcid}}
+    schema = IdentifierSchema(allowed_schemes=allowed_schemes)
+
+    assert schema.load(
+        {
+            "identifier": " 0000-0001-6759-6273 ",
+            "scheme": " orcid ",
+        }
+    ) == {"identifier": "0000-0001-6759-6273", "scheme": "orcid"}
+
+
+def test_invalid_identifier_after_sanitization():
+    allowed_schemes = {"orcid": {"label": "ORCID", "validator": idutils.is_orcid}}
+    schema = IdentifierSchema(allowed_schemes=allowed_schemes)
+
+    with pytest.raises(ValidationError) as exc_info:
+        schema.load({"identifier": " invalid ", "scheme": " orcid "})
+
+    assert exc_info.value.normalized_messages() == {
+        "identifier": "Invalid ORCID identifier."
+    }
 
 
 def test_detected_and_not_allowed_scheme_valid_value():  # 6
