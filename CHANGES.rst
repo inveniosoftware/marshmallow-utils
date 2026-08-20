@@ -9,6 +9,10 @@
 Changes
 =======
 
+Version v0.15.3 (released 2026-08-20)
+
+- fix(identifier): detect schemes after sanitization
+
 Version v0.15.2 (released 2026-08-04)
 
 - fix(build): include mo files
