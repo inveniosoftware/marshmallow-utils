@@ -15,7 +15,14 @@ class StrippedHTML(fields.String):
     is being unescaped before return.
     """
 
+    def _deserialize(self, value, attr, data, **kwargs):
+        """Deserialize string by stripping HTML entities."""
+        value = super()._deserialize(value, attr, data, **kwargs)
+        # guard against none/empty as strip_html expects a string
+        return strip_html(value) if value else value
+
     def _serialize(self, value, attr, data, **kwargs):
         """Serialize string by stripping HTML entities."""
         value = super()._serialize(value, attr, data, **kwargs)
-        return strip_html(value)
+        # guard against none/empty as strip_html expects a string
+        return strip_html(value) if value else value
