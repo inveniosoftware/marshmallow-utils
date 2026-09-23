@@ -75,7 +75,8 @@ class URLValidator(Validator):
                     r"(?::\d+)?",
                 )
             )
-            relative_part = r"(?:/?|[/?]\S+)\Z"
+            # Disallow angle brackets to prevent XSS in link text/href
+            relative_part = r"(?:/?|[/?][^\s<>]+)\Z"
 
             if relative:
                 if absolute:
