@@ -4,7 +4,7 @@
 
 """Localized Extended Date(/Time) Format Level 0 date string field."""
 
-import arrow
+import pendulum
 from babel import Locale
 from babel.core import negotiate_locale
 from babel.dates import LC_TIME, format_date, format_datetime, format_time
@@ -42,13 +42,9 @@ class BabelFormatField(fields.String):
         if not self._parse or not isinstance(value, str):
             return value
 
-        a = arrow.get(value)
-        if as_time:
-            return a.datetime
-        elif as_date:
+        a = pendulum.parse(value)
+        if as_date:
             return a.date()
-        elif as_datetime:
-            return a.datetime
         else:
             return a
 
