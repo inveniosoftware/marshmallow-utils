@@ -9,6 +9,11 @@
 Changes
 =======
 
+Version v0.15.4 (released 2026-10-06)
+
+- fix: strip HTML on deserialize input
+- fix(url): disallow angle brackets to prevent XSS
+
 Version v0.15.3 (released 2026-08-20)
 
 - fix(identifier): detect schemes after sanitization
