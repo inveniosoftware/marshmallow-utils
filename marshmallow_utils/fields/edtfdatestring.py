@@ -43,6 +43,9 @@ class EDTFValidator(Validator):
 
     def __call__(self, value):
         """Validate."""
+        if isinstance(value, str) and value.startswith(("-", "0000")):
+            raise ValidationError(self._format_error(value, None))
+
         try:
             e = parse_edtf(value)
         except ParseException:

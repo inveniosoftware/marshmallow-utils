@@ -54,6 +54,16 @@ def test_load_date():
     # Interval not supported
     pytest.raises(ValidationError, s.load, {"date": "2020-01-01T10:00:00"})
 
+    # Negative Dates must raise ValidationError
+    pytest.raises(ValidationError, s.load, {"date": "-2020"})
+    pytest.raises(ValidationError, s.load, {"date": "-2020-10"})
+    pytest.raises(ValidationError, s.load, {"date": "-2020-01-01"})
+
+    # Year 0 must also fail
+    pytest.raises(ValidationError, s.load, {"date": "0000"})
+    pytest.raises(ValidationError, s.load, {"date": "0000-10"})
+    pytest.raises(ValidationError, s.load, {"date": "0000-01-01"})
+
 
 def test_load_lvl2date():
     s = TestSchemaLVL2Date()
