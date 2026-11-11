@@ -7,7 +7,6 @@
 # Translators:
 # Jesús Martín <jesusmartin@sallep.net>, 2022
 # 
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: marshmallow-utils 0.9.1\n"
