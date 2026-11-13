@@ -11,6 +11,6 @@ set -o nounset
 
 pybabel extract -F pyproject.toml marshmallow_utils --output-file /dev/null
 python -m sphinx.cmd.build -qnN docs docs/_build/html
-python -m pytest
+python -m pytest "$@"
 tests_exit_code=$?
 exit "$tests_exit_code"

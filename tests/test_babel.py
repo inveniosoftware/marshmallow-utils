@@ -72,6 +72,14 @@ def test_format_date(dt):
     assert MySchema().dump({"date": "2021-01-01"}) == {"date": "01.01.2021"}
 
 
+def test_format_edtf_unrenderable_year_falls_back_to_raw():
+    class S(Schema):
+        date = FormatEDTF()
+
+    assert S().dump({"date": "-2026"}) == {"date": "-2026"}
+    assert S().dump({"date": "0000-01-01"}) == {"date": "0000-01-01"}
+
+
 def test_babelgettextdictfield():
     """Test the babel gettext dict field."""
 
