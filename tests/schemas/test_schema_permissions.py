@@ -5,8 +5,10 @@
 """Tests for marshmallow schema post dump permissions check."""
 
 import pytest
+from marshmallow import Schema, fields
 
 from marshmallow_utils.context import context_schema
+from marshmallow_utils.permissions import FieldPermissionsMixin
 
 
 def mocked_field_permission_check(action, identity=None, **kwargs):
@@ -115,3 +117,38 @@ def test_post_dump_permissions_removal_context(test_schema, test_object, test_ob
     assert (
         mocked_field_permission_check.counter == 4
     )  # since only 2 different permissions are defined in the attribute "field_dump_permissions" of the schema, we should only resolve 4 times the permissions (2 permissions checks * 2 different records)
+
+
+def test_post_dump_denied_permission_is_checked_once():
+    """A denied permission shared by several fields is resolved only once."""
+
+    class SharedActionSchema(Schema, FieldPermissionsMixin):
+        field_dump_permissions = {
+            "address": "manage",
+            "email": "manage",
+            "phone": "manage",
+        }
+
+        name = fields.String()
+        address = fields.String()
+        email = fields.String()
+        phone = fields.String()
+
+    checked = []
+
+    def deny_manage(action, identity=None, **kwargs):
+        checked.append(action)
+        return action != "manage"
+
+    context_schema.set({"field_permission_check": deny_manage})
+    dumped = SharedActionSchema().dump(
+        {
+            "name": "John",
+            "address": "CERN",
+            "email": "john@example.org",
+            "phone": "123",
+        }
+    )
+
+    assert dumped == {"name": "John"}
+    assert checked == ["manage"]
