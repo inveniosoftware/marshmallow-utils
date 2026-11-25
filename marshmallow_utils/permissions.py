@@ -66,10 +66,9 @@ class FieldPermissionsMixin:
             for k in self.field_dump_permissions:
                 if k in data:
                     action = self.field_dump_permissions[k] or self.default_dump_action
-                    has_permission = _permissions_cache.get(action)
-                    if not has_permission:
-                        has_permission = field_permission_check(action)
-                        _permissions_cache[action] = has_permission
+                    if action not in _permissions_cache:
+                        _permissions_cache[action] = field_permission_check(action)
+                    has_permission = _permissions_cache[action]
                     if action and not has_permission:
                         del data[k]
         return data
